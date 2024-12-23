@@ -529,14 +529,16 @@ typedef struct AVOutputFormat {
      * The ff_const59 define is not part of the public API and will
      * be removed without further warning.
      */
-#if FF_API_AVIOFORMAT
-#define ff_const59
+     
+/*#if FF_API_AVIOFORMAT */
+/*#define ff_const59 */  
+/*
 #else
 #define ff_const59 const
-#endif
-#if FF_API_NEXT
+#endif */
+/*if FF_API_NEXT
     ff_const59 struct AVOutputFormat *next;
-#endif
+#endif */
     /**
      * size of private data so that it can be allocated in the wrapper
      */
@@ -1250,7 +1252,7 @@ typedef struct AVFormatContext {
      *
      * Muxing only, must be set by the caller before avformat_write_header().
      */
-    ff_const59 struct AVOutputFormat *oformat;
+    /*ff_const59 */struct AVOutputFormat *oformat;
 
     /**
      * Format private data. This is an AVOptions-enabled struct
@@ -2614,7 +2616,7 @@ int av_write_trailer(AVFormatContext *s);
  * @param mime_type if non-NULL checks if mime_type matches with the
  * MIME type of the registered formats
  */
-ff_const59 AVOutputFormat *av_guess_format(const char *short_name,
+/*ff_const59*/ AVOutputFormat *av_guess_format(const char *short_name,
                                 const char *filename,
                                 const char *mime_type);
 

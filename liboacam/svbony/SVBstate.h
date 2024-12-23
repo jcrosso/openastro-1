@@ -52,7 +52,10 @@ typedef struct SVB_STATE {
   // camera settings
   int			binMode;
   // control values
-  uint32_t		currentBrightness;
+  uint32_t		currentBlackLevel;
+  uint32_t		currentContrast;
+  uint32_t		currentSharpness;
+  uint32_t		currentSaturation;
   uint32_t		currentGain;
   uint32_t		currentAbsoluteExposure;
   uint32_t		currentGamma;
@@ -64,11 +67,17 @@ typedef struct SVB_STATE {
   uint32_t		currentHFlip;
   uint32_t		currentVFlip;
   uint32_t		currentBitDepth;
-  uint32_t		coolerEnabled;
+  uint32_t		currentCoolerEnabled;
   uint32_t		currentSetPoint;
   uint32_t		currentCoolerPower;
+  uint32_t		currentTemperature;  
+  uint32_t		currentBadPixelCorrectioEnable;  
+  uint32_t		currentBadPixelCorrectionThreshold;  
   int32_t		autoGain;
-  int32_t		autoBrightness;
+  int32_t		autoBlackLevel;
+  int32_t		autoContrast;
+  int32_t		autoSharpness;
+  int32_t		autoSaturation;
   int32_t		autoExposure;
   int32_t		autoGamma;
   int32_t		autoBlueBalance;

@@ -263,7 +263,7 @@ Camera::isAuto ( int control )
   if ( !initialised ) {
     qWarning() << __func__ << " called with camera uninitialised";
     return 0;
-  } 
+  }
 
   return cameraFuncs.isAuto ( cameraContext, control );
 }

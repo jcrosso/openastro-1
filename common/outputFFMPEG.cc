@@ -64,7 +64,7 @@ OutputFFMPEG::OutputFFMPEG ( int x, int y, int n, int d, int fmt,
   }
 
   writesDiscreteFiles = 0;
-  outputFormat = 0;
+  outputFormat = NULL;
   formatContext = 0;
   videoStream = 0;
   frameCount = 0;
@@ -223,11 +223,11 @@ OutputFFMPEG::openOutput ( void )
     fullSaveFilePath = filenameRoot + "." + fileExtension;
   }
 
-  if (!( outputFormat = av_guess_format ( fileExtension, 0, 0 ))) {
+/*  if (!( outputFormat = av_guess_format ( fileExtension, 0, 0 ))) {
     qWarning() << "av_guess_format failed";
     return -1;
   }
-
+*/
   if (!( formatContext = avformat_alloc_context())) {
     qWarning() << "avformat_alloc_context failed";
     return -1;
@@ -269,9 +269,7 @@ OutputFFMPEG::openOutput ( void )
 }
 
 
-int
-OutputFFMPEG::addFrame ( void* frame,
-		const char* timestampStr __attribute__((unused)),
+int OutputFFMPEG::addFrame ( void* frame,const char* timestampStr __attribute__((unused)),
     int64_t expTime __attribute__((unused)),
 		const char* commentStr __attribute__((unused)),
 		FRAME_METADATA* metadata __attribute__((unused)),
@@ -392,7 +390,7 @@ OutputFFMPEG::addFrame ( void* frame,
       // This is just a hack to make the error "Application provided invalid,
       // non monotonically increasing dts to muxer" go away.  I should fix it
       // properly somehow
-      packet->dts = videoStream->cur_dts;
+//      packet->dts=videoStream->cur_dts;
       packet->dts++;
       packet->pts = packet->dts;
       ret = av_write_frame ( formatContext, packet );

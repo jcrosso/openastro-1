@@ -48,7 +48,7 @@ int av_match_ext(const char *filename, const char *extensions)
     return 0;
 }
 
-ff_const59 AVOutputFormat *av_guess_format(const char *short_name, const char *filename,
+/*ff_const59*/ AVOutputFormat *av_guess_format(const char *short_name, const char *filename,
                                 const char *mime_type)
 {
     const AVOutputFormat *fmt = NULL;

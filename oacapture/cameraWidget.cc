@@ -58,20 +58,20 @@ CameraWidget::CameraWidget ( QWidget* parent ) : QGroupBox ( parent )
 
   tempLabel = new QLabel();
   if ( generalConf.tempsInC ) {
-    tempLabel->setText ( tr ( "Temp (C)" ));
+    tempLabel->setText ( tr ( "Temp (°C)" ));
   } else {
-    tempLabel->setText ( tr ( "Temp (F)" ));
+    tempLabel->setText ( tr ( "Temp (°F)" ));
   }
-  tempLabel->setFixedWidth ( 60 );
+  tempLabel->setFixedWidth ( 100 );
   fpsMaxLabel = new QLabel ( tr ( "FPS (max)" ));
-  fpsMaxLabel->setFixedWidth ( 65 );
+  fpsMaxLabel->setFixedWidth ( 100 );
   fpsActualLabel = new QLabel ( tr ( "FPS (actual)" ));
-  fpsActualLabel->setFixedWidth ( 80 );
+  fpsActualLabel->setFixedWidth ( 100 );
 
   tempValue = new QLabel ( "" );
-  tempValue->setFixedWidth ( 30 );
+  tempValue->setFixedWidth ( 50 );
   fpsMaxValue = new QLabel ( "0" );
-  fpsMaxValue->setFixedWidth ( 30 );
+  fpsMaxValue->setFixedWidth ( 50 );
   fpsActualValue = new QLabel ( "0" );
   fpsActualValue->setFixedWidth ( 50 );
 
@@ -110,7 +110,7 @@ CameraWidget::configure ( void )
 	int firstFormat = -1;
 
   if ( !inputFormatList.empty()) {
-    disconnect ( inputFormatMenu, SIGNAL( currentIndexChanged ( int )), 
+    disconnect ( inputFormatMenu, SIGNAL( currentIndexChanged ( int )),
         this, SLOT( changeFrameFormat ( int )));
   }
   inputFormatMenu->clear();
@@ -136,7 +136,7 @@ CameraWidget::configure ( void )
     currentAction = 0;
   }
 
-  connect ( inputFormatMenu, SIGNAL( currentIndexChanged ( int )), 
+  connect ( inputFormatMenu, SIGNAL( currentIndexChanged ( int )),
       this, SLOT( changeFrameFormat ( int )));
 
 	// Shouldn't need to do this is there's only one possible frame format
@@ -260,9 +260,9 @@ CameraWidget::setTemperature()
 
   if ( updateTemperatureLabel == 1 ) {
     if ( generalConf.tempsInC ) {
-      tempLabel->setText ( tr ( "Temp (C)" ));
+      tempLabel->setText ( tr ( "Temp (°C)" ));
     } else {
-      tempLabel->setText ( tr ( "Temp (F)" ));
+      tempLabel->setText ( tr ( "Temp (°F)" ));
     }
     updateTemperatureLabel = 0;
   }
@@ -270,7 +270,7 @@ CameraWidget::setTemperature()
   if ( !generalConf.tempsInC ) {
     temp = temp * 9 / 5 + 32;
   }
-  stringVal.setNum ( temp, 'g', 3 );
+  stringVal.setNum ( temp, 'f', 1 );
   tempValue->setText ( stringVal );
 }
 
@@ -353,7 +353,7 @@ CameraWidget::updateForceFrameFormat ( unsigned int oldFormat,
     // Set the current index to the relevant option.
 
     inputFormatMenu->setEnabled ( 0 );
-    disconnect ( inputFormatMenu, SIGNAL( currentIndexChanged ( int )), 
+    disconnect ( inputFormatMenu, SIGNAL( currentIndexChanged ( int )),
         this, SLOT( changeFrameFormat ( int )));
     if ( commonState.camera->hasFrameFormat ( newFormat )) {
       n = inputFormatList.indexOf ( newFormat );
@@ -408,7 +408,7 @@ CameraWidget::updateForceFrameFormat ( unsigned int oldFormat,
   }
 
 	if ( reconnectSlot ) {
-    connect ( inputFormatMenu, SIGNAL( currentIndexChanged ( int )), 
+    connect ( inputFormatMenu, SIGNAL( currentIndexChanged ( int )),
         this, SLOT( changeFrameFormat ( int )));
 	}
 }

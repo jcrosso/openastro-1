@@ -52,6 +52,7 @@ oaSVBGetCameras ( CAMERA_LIST* deviceList, unsigned long featureFlags,
   oaCameraDevice*	dev;
   DEVICE_INFO*		_private;
   SVB_CAMERA_INFO	camInfo;
+  
 
 	if (( ret = _svbInitLibraryFunctionPointers()) != OA_ERR_NONE ) {
 		return ret;
@@ -60,7 +61,7 @@ oaSVBGetCameras ( CAMERA_LIST* deviceList, unsigned long featureFlags,
   if (( numFound = p_SVBGetNumOfConnectedCameras()) < 1 ) {
     return 0;
   }
-
+  
   for ( i = 0; i < numFound; i++ ) {
     p_SVBGetCameraInfo ( &camInfo, i );
     currName = camInfo.FriendlyName;

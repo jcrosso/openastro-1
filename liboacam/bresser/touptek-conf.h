@@ -27,7 +27,7 @@
 #ifndef OA_BRESSERCAM_CONF_H
 #define OA_BRESSERCAM_CONF_H
 
-#include <bressercam.h>
+#include </home/jcrosso/Downloads/openastro/ext/libbressercam/include/bressercam.h>
 
 // Defines for:
 //

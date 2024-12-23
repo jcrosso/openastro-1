@@ -353,7 +353,7 @@ MainWindow::readConfig ( QString configFile )
     defaultDir = pwd->pw_dir;
   }
 #endif
-  
+
   if ( configFile != "" ) {
     settings = new QSettings ( configFile, QSettings::IniFormat );
   } else {
@@ -411,9 +411,9 @@ MainWindow::readConfig ( QString configFile )
     commonConfig.imageSizeX = 0;
     commonConfig.imageSizeY = 0;
 
-    config.zoomButton1Option = 1;
-    config.zoomButton2Option = 3;
-    config.zoomButton3Option = 5;
+    config.zoomButton1Option = 0;
+    config.zoomButton2Option = 1;
+    config.zoomButton3Option = 3;
     config.zoomValue = 100;
 
     cameraConf.CONTROL_VALUE( OA_CAM_CTRL_GAIN ) = 50;
@@ -561,11 +561,11 @@ MainWindow::readConfig ( QString configFile )
     commonConfig.imageSizeY = settings->value ( "image/imageSizeY", 0 ).toInt();
 
     config.zoomButton1Option = settings->value ( "image/zoomButton1Option",
-        1 ).toInt();
+        0 ).toInt();
     config.zoomButton2Option = settings->value ( "image/zoomButton2Option",
-        3 ).toInt();
+        1 ).toInt();
     config.zoomButton3Option = settings->value ( "image/zoomButton3Option",
-        5 ).toInt();
+        3 ).toInt();
     config.zoomValue = settings->value ( "image/zoomValue", 100 ).toInt();
 
 #ifdef OACAPTURE
@@ -797,7 +797,7 @@ MainWindow::readConfig ( QString configFile )
                   for ( int j = 1; j <= numControls; j++ ) {
                     settings->setArrayIndex ( j-1 );
                     int numModifiers = settings->beginReadArray ( "modifiers" );
-                    if ( numModifiers )  { 
+                    if ( numModifiers )  {
                       for ( int i = 0; i < numModifiers; i++ ) {
                         settings->setArrayIndex ( i );
                         if ( numFilters <= filterConf.numFilters ) {
@@ -1559,7 +1559,7 @@ MainWindow::createMenus ( void )
   darkframe->setCheckable ( true );
   // FIX ME - set up slots
 
-  flipX = new QAction ( QIcon ( ":/qt-icons/object-flip-horizontal.png" ), 
+  flipX = new QAction ( QIcon ( ":/qt-icons/object-flip-horizontal.png" ),
       tr ( "Flip X" ), this );
   flipX->setStatusTip ( tr ( "Flip image left<->right" ));
   flipX->setCheckable ( true );
@@ -1855,7 +1855,7 @@ MainWindow::connectCamera ( int deviceIndex )
   state.captureWidget->enablePNGCapture (
       ( !oaFrameFormats[ format ].rawColour ||
       ( config.demosaic && config.demosaicOutput )) ? 1 : 0 );
-  state.captureWidget->enableMOVCapture (( QUICKTIME_OK( format ) || 
+  state.captureWidget->enableMOVCapture (( QUICKTIME_OK( format ) ||
       ( oaFrameFormats[ format ].rawColour && config.demosaic &&
       config.demosaicOutput )) ? 1 : 0 );
 #endif
@@ -2160,8 +2160,8 @@ void
 MainWindow::resetTemperatureLabel()
 {
   updateTemperatureLabel = 1;
-} 
-  
+}
+
 
 void
 MainWindow::clearTemperature ( void )
@@ -2423,7 +2423,7 @@ MainWindow::enableDemosaic ( void )
     state.captureWidget->enablePNGCapture (
         ( !oaFrameFormats[ format ].rawColour ||
         ( config.demosaic && config.demosaicOutput )) ? 1 : 0 );
-    state.captureWidget->enableMOVCapture (( QUICKTIME_OK( format ) || 
+    state.captureWidget->enableMOVCapture (( QUICKTIME_OK( format ) ||
         ( oaFrameFormats[ format ].rawColour && config.demosaic &&
         config.demosaicOutput )) ? 1 : 0 );
   }

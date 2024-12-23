@@ -59,8 +59,9 @@ ImageWidget::ImageWidget ( QWidget* parent ) : QGroupBox ( parent )
   ignoreResolutionChanges = 0;
   resMenu = new QComboBox ( this );
   QStringList resolutions;
-  resolutions << "640x480" << "1280x960";
+  resolutions << "640x480" << "1280x960" << "1200x1200" << "2000x2000";
   resMenu->addItems ( resolutions );
+  resMenu->setFixedWidth ( 140 );
   connect ( resMenu, SIGNAL( currentIndexChanged ( int )), this,
       SLOT( cameraROIChanged ( int )));
 
@@ -69,9 +70,9 @@ ImageWidget::ImageWidget ( QWidget* parent ) : QGroupBox ( parent )
   roiBy = new QLabel ( " x ", this );
 
   roiXSize->setMaxLength ( 4 );
-  roiXSize->setFixedWidth ( 45 );
+  roiXSize->setFixedWidth ( 60 );
   roiYSize->setMaxLength ( 4 );
-  roiYSize->setFixedWidth ( 45 );
+  roiYSize->setFixedWidth ( 60 );
   QString xStr, yStr;
   if ( commonConfig.imageSizeX > 0 ) {
     xStr = QString::number ( commonConfig.imageSizeX );
@@ -106,9 +107,9 @@ ImageWidget::ImageWidget ( QWidget* parent ) : QGroupBox ( parent )
   cropBy = new QLabel ( " x ", this );
 
   cropXSize->setMaxLength ( 4 );
-  cropXSize->setFixedWidth ( 45 );
+  cropXSize->setFixedWidth ( 60 );
   cropYSize->setMaxLength ( 4 );
-  cropYSize->setFixedWidth ( 45 );
+  cropYSize->setFixedWidth ( 60 );
 
   cropButton = new QPushButton (
       QIcon ( ":/qt-icons/roi.png" ), "", this );

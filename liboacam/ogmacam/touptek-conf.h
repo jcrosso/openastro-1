@@ -27,7 +27,7 @@
 #ifndef OA_OGMACAM_CONF_H
 #define OA_OGMACAM_CONF_H
 
-#include <ogmacam.h>
+#include </home/jcrosso/Downloads/openastro/ext/libogmacam/include/ogmacam.h>
 
 // Defines for:
 //

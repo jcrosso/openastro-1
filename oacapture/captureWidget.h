@@ -89,6 +89,7 @@ class CaptureWidget : public QGroupBox
     QPushButton*	pauseButton;
     QPushButton*	autorunButton;
     QLabel*		autorunLabel;
+    QLabel*		countLabel;
     QVBoxLayout*	box;
     QHBoxLayout*	profile;
     QHBoxLayout*	file;
@@ -126,6 +127,7 @@ class CaptureWidget : public QGroupBox
   signals:
     void		writeStatusMessage ( QString );
     void		changeAutorunLabel ( QString );
+    void		changeCountLabel ( QString );
     void		enableStopButton ( int );
     void		configureButtonsForStart ( int );
     void		configureButtonsAfterStop ( void );
@@ -153,6 +155,7 @@ class CaptureWidget : public QGroupBox
     void		changeSecondsLimitCount ( int );
     void		doStopRecording ( void );
     void		updateAutorunLabel ( QString );
+    void		updateCountLabel ( QString );
     void		changeStopButtonState ( int );
     void		setButtonsForBeginRecording ( int );
     void		setButtonsForRecordingStopped ( void );

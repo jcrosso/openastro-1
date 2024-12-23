@@ -44,7 +44,7 @@ AC_PATH_PROG(PYLON_CONFIG,[pylon-config],,[$PATH:/opt/pylon/bin])
 
 AC_ARG_VAR(ARAVIS_INC,Path to Aravis include files)
 
-armelavailable=yes
+armelavailable=no
 case $host in
   *-apple-*|i?86-*-*|x86_64-*-*|armv[78]l-*-*|aarch64-*-*)
 		;;
@@ -58,25 +58,25 @@ have_ftdi1=no
 have_flycapture2=no
 have_spinnaker=no
 have_dl=no
-have_toupcam=$armelavailable
-have_mallincam=$armelavailable
-have_bressercam=$armelavailable
-have_ogmacam=$armelavailable
-have_tscam=$armelavailable
-have_altaircam=$armelavailable
-have_altaircamlegacy=$armelavailable
-have_starshootg=$armelavailable
-have_nncam=$armelavailable
-have_omegonprocam=$armelavailable
+have_toupcam=no
+have_mallincam=no
+have_bressercam=no
+have_ogmacam=no
+have_tscam=no
+have_altaircam=no
+have_altaircamlegacy=no
+have_starshootg=no
+have_nncam=no
+have_omegonprocam=no
 #have_meadecam=$armelavailable
 have_meadecam=no
-have_qhyccd=$armelavailable
+have_qhyccd=no
 have_libavformat=no
 have_libavutil=no
 have_libavcodec=no
 internal_uvc=no
 have_libgphoto2=no
-have_svbcamerasdk=no
+have_svbcamerasdk=yes
 have_libaravis=no
 
 checkQtForPIC=no
@@ -102,25 +102,25 @@ checkSystemLibqhyccd=no
 checkSystemLibsvbcamerasdk=no
 useisystemInclude=no
 build_libusb=no
-zwoSupportedArch=yes
+zwoSupportedArch=no
 case $host in
   *-linux-*)
     checkQtForPIC=yes
     checkSystemDC1394=yes
     checkSystemLibuvc=yes
-    checkSystemLibasicamera=yes
-    checkSystemLibefwfilter=yes
-    checkSystemLibtoupcam=$armelavailable
-		checkSystemLibqhyccd=$armelavailable
-		checkSystemLibaltaircam=$armelavailable
-		checkSystemLibaltaircamlegacy=$armelavailable
-		checkSystemLibmallincam=$armelavailable
-		checkSystemLibbressercam=$armelavailable
-		checkSystemLibogmacam=$armelavailable
-		checkSystemLibtscam=$armelavailable
-    checkSystemLibstarshootg=$armelavailable
-    checkSystemLibnncam=$armelavailable
-    checkSystemLibomegonprocam=$armelavailable
+    checkSystemLibasicamera=no
+    checkSystemLibefwfilter=no
+    checkSystemLibtoupcam=no
+		checkSystemLibqhyccd=no
+		checkSystemLibaltaircam=no
+		checkSystemLibaltaircamlegacy=no
+		checkSystemLibmallincam=no
+		checkSystemLibbressercam=no
+		checkSystemLibogmacam=no
+		checkSystemLibtscam=no
+    checkSystemLibstarshootg=no
+    checkSystemLibnncam=no
+    checkSystemLibomegonprocam=no
 		#checkSystemLibmeadecam=$armelavailable
     checkSystemLibmeadecam=no
 		checkSystemLibsvbcamerasdk=yes
@@ -1586,7 +1586,7 @@ case $host in
   *-apple-*)
     AC_CONFIG_LINKS([$ext1/libASICamera2/libASICamera2.dylib:ext/libASICamera2/mac/libASICamera2.dylib])
     AC_CONFIG_LINKS([$ext2/libtoupcam/libtoupcam.dylib:ext/libtoupcam/mac/libtoupcam.dylib])
-    AC_CONFIG_LINKS([$ext3/libaltaircam/libaltaircam.dylib:ext/libaltaircam/mac64/libaltaircam.dylib])
+    AC_CONFIG_LINKS([$ext3/libaltaircam/libaltaircam.dylib:ext/libaltaircam/mac/libaltaircam.dylib])
     AC_CONFIG_LINKS([$ext4/libEFWFilter/libEFWFilter.a:ext/libEFWFilter/mac/libEFWFilter.a])
     AC_CONFIG_LINKS([$ext5/libaltaircamlegacy/libaltaircamlegacy.dylib:ext/libaltaircamlegacy/mac64/libaltaircamlegacy.dylib])
     AC_CONFIG_LINKS([$ext6/libqhyccd/libqhyccd.dylib:ext/libqhyccd/mac64/libqhyccd.dylib])
@@ -1820,7 +1820,7 @@ then
 	fi
 fi
 
-AC_DEFINE([HAVE_LIBMALLINCAM],[1],[Have Mallincam library support])
+#AC_DEFINE([HAVE_LIBMALLINCAM],[1],[Have Mallincam library support])
 
 AC_SUBST(OSX_FRAMEWORKS)
 AC_SUBST(OSX_WARNINGS)

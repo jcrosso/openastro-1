@@ -135,6 +135,13 @@ retry:
 		  return OA_ERR_SYMBOL_NOT_FOUND;
 		}
 
+		if (!( *( void** )( &p_SVBGetCameraInfo ) = _getDLSym ( libHandle,
+		    "SVBGetCameraInfo" ))) {
+		  dlclose ( libHandle );
+		  libHandle = 0;
+		  return OA_ERR_SYMBOL_NOT_FOUND;
+		}
+
 		if (!( *( void** )( &p_SVBGetCameraProperty ) = _getDLSym ( libHandle,
 		    "SVBGetCameraProperty" ))) {
 		  dlclose ( libHandle );

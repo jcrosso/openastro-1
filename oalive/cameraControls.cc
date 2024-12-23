@@ -699,6 +699,7 @@ CameraControls::configure ( void )
 		statusGrid->addWidget (
 				controlLabel[OA_CAM_CTRL_MODIFIER_STD][OA_CAM_CTRL_POWER_SOURCE],
 				row++, 0 );
+
 		powerSource = new QLabel ( tr (( commonState.camera->readControl (
 				OA_CAM_CTRL_POWER_SOURCE ) == OA_AC_POWER ) ? "AC" : "Battery" ));
 		statusGrid->addWidget (

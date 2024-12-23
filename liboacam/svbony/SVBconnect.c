@@ -39,6 +39,7 @@
 #include "SVBoacam.h"
 #include "SVBstate.h"
 #include "SVBprivate.h"
+#include <string.h>
 
 
 static void _SVBInitFunctionPointers ( oaCamera* );
@@ -78,13 +79,26 @@ oaSVBInitCamera ( oaCameraDevice* device )
 
   p_SVBGetCameraInfo ( &camInfo, cameraInfo->index );
   cameraInfo->cameraId = camInfo.CameraID;
-  p_SVBGetCameraProperty ( camInfo.CameraID, &camProps );
+
+  cameraInfo->usb3Cam = 0;
+  if (!strcmp(camInfo.PortType,"USB3.0"))
+   {
+    cameraInfo->usb3Cam = 1;
+    oaLogDebug ( OA_LOG_CAMERA, "%s: camera port type = %s", __func__,camInfo.PortType );
+   }
 
   OA_CLEAR ( camera->controlType );
   OA_CLEAR ( camera->features );
-  
+
   if ( p_SVBOpenCamera ( cameraInfo->cameraId )) {
     oaLogError ( OA_LOG_CAMERA, "%s: open of camera %ld failed", __func__,
+				cameraInfo->cameraId );
+    FREE_DATA_STRUCTS;
+    return 0;
+  }
+
+  if ( p_SVBGetCameraProperty ( cameraInfo->cameraId, &camProps )) {
+    oaLogError ( OA_LOG_CAMERA, "%s: get properties of camera %ld failed", __func__,
 				cameraInfo->cameraId );
     FREE_DATA_STRUCTS;
     return 0;
@@ -236,31 +250,101 @@ oaSVBInitCamera ( oaCameraDevice* device )
           }
           break;
 
-#if 0
-        case SVB_BRIGHTNESS:
-          camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_BRIGHTNESS ) =
+        case SVB_BLACK_LEVEL:
+          camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_BLACKLEVEL ) =
               OA_CTRL_TYPE_INT32;
-          commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_BRIGHTNESS ) =
+          commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_BLACKLEVEL ) =
               controlCaps.MinValue;
-          commonInfo->OA_CAM_CTRL_MAX( OA_CAM_CTRL_BRIGHTNESS ) =
+          commonInfo->OA_CAM_CTRL_MAX( OA_CAM_CTRL_BLACKLEVEL ) =
               controlCaps.MaxValue;
-          commonInfo->OA_CAM_CTRL_STEP( OA_CAM_CTRL_BRIGHTNESS ) = 1;
-          commonInfo->OA_CAM_CTRL_DEF( OA_CAM_CTRL_BRIGHTNESS ) =
+          commonInfo->OA_CAM_CTRL_STEP( OA_CAM_CTRL_BLACKLEVEL ) = 1;
+          commonInfo->OA_CAM_CTRL_DEF( OA_CAM_CTRL_BLACKLEVEL ) =
               controlCaps.DefaultValue;
           p_SVBGetControlValue ( cameraInfo->cameraId, c, &currentValue,
               &autoSetting );
-          cameraInfo->currentBrightness = currentValue;
+          cameraInfo->currentBlackLevel = currentValue;
           if ( controlCaps.IsAutoSupported ) {
-            camera->OA_CAM_CTRL_AUTO_TYPE( OA_CAM_CTRL_BRIGHTNESS ) =
+            camera->OA_CAM_CTRL_AUTO_TYPE( OA_CAM_CTRL_BLACKLEVEL ) =
                 OA_CTRL_TYPE_BOOLEAN;
-            commonInfo->OA_CAM_CTRL_AUTO_MIN( OA_CAM_CTRL_BRIGHTNESS ) = 0;
-            commonInfo->OA_CAM_CTRL_AUTO_MAX( OA_CAM_CTRL_BRIGHTNESS ) = 1;
-            commonInfo->OA_CAM_CTRL_AUTO_STEP( OA_CAM_CTRL_BRIGHTNESS ) = 1;
-            commonInfo->OA_CAM_CTRL_AUTO_DEF( OA_CAM_CTRL_BRIGHTNESS ) =
-                cameraInfo->autoBrightness = autoSetting;
+            commonInfo->OA_CAM_CTRL_AUTO_MIN( OA_CAM_CTRL_BLACKLEVEL ) = 0;
+            commonInfo->OA_CAM_CTRL_AUTO_MAX( OA_CAM_CTRL_BLACKLEVEL ) = 1;
+            commonInfo->OA_CAM_CTRL_AUTO_STEP( OA_CAM_CTRL_BLACKLEVEL ) = 1;
+            commonInfo->OA_CAM_CTRL_AUTO_DEF( OA_CAM_CTRL_BLACKLEVEL ) =
+                cameraInfo->autoBlackLevel = autoSetting;
           }
           break;
-#endif
+
+        case SVB_CONTRAST:
+          camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_CONTRAST ) =
+              OA_CTRL_TYPE_INT32;
+          commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_CONTRAST ) =
+              controlCaps.MinValue;
+          commonInfo->OA_CAM_CTRL_MAX( OA_CAM_CTRL_CONTRAST ) =
+              controlCaps.MaxValue;
+          commonInfo->OA_CAM_CTRL_STEP( OA_CAM_CTRL_CONTRAST ) = 1;
+          commonInfo->OA_CAM_CTRL_DEF( OA_CAM_CTRL_CONTRAST ) =
+              controlCaps.DefaultValue;
+          p_SVBGetControlValue ( cameraInfo->cameraId, c, &currentValue,
+              &autoSetting );
+          cameraInfo->currentContrast = currentValue;
+          if ( controlCaps.IsAutoSupported ) {
+            camera->OA_CAM_CTRL_AUTO_TYPE( OA_CAM_CTRL_CONTRAST ) =
+                OA_CTRL_TYPE_BOOLEAN;
+            commonInfo->OA_CAM_CTRL_AUTO_MIN( OA_CAM_CTRL_CONTRAST ) = 0;
+            commonInfo->OA_CAM_CTRL_AUTO_MAX( OA_CAM_CTRL_CONTRAST ) = 1;
+            commonInfo->OA_CAM_CTRL_AUTO_STEP( OA_CAM_CTRL_CONTRAST ) = 1;
+            commonInfo->OA_CAM_CTRL_AUTO_DEF( OA_CAM_CTRL_CONTRAST ) =
+                cameraInfo->autoContrast = autoSetting;
+          }
+          break;
+
+        case SVB_SHARPNESS:
+          camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_SHARPNESS ) =
+              OA_CTRL_TYPE_INT32;
+          commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_SHARPNESS ) =
+              controlCaps.MinValue;
+          commonInfo->OA_CAM_CTRL_MAX( OA_CAM_CTRL_SHARPNESS ) =
+              controlCaps.MaxValue;
+          commonInfo->OA_CAM_CTRL_STEP( OA_CAM_CTRL_SHARPNESS ) = 1;
+          commonInfo->OA_CAM_CTRL_DEF( OA_CAM_CTRL_SHARPNESS ) =
+              controlCaps.DefaultValue;
+          p_SVBGetControlValue ( cameraInfo->cameraId, c, &currentValue,
+              &autoSetting );
+          cameraInfo->currentSharpness = currentValue;
+          if ( controlCaps.IsAutoSupported ) {
+            camera->OA_CAM_CTRL_AUTO_TYPE( OA_CAM_CTRL_SHARPNESS ) =
+                OA_CTRL_TYPE_BOOLEAN;
+            commonInfo->OA_CAM_CTRL_AUTO_MIN( OA_CAM_CTRL_SHARPNESS ) = 0;
+            commonInfo->OA_CAM_CTRL_AUTO_MAX( OA_CAM_CTRL_SHARPNESS ) = 1;
+            commonInfo->OA_CAM_CTRL_AUTO_STEP( OA_CAM_CTRL_SHARPNESS ) = 1;
+            commonInfo->OA_CAM_CTRL_AUTO_DEF( OA_CAM_CTRL_SHARPNESS ) =
+                cameraInfo->autoSharpness = autoSetting;
+          }
+          break;
+
+        case SVB_SATURATION:
+          camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_SATURATION ) =
+              OA_CTRL_TYPE_INT32;
+          commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_SATURATION ) =
+              controlCaps.MinValue;
+          commonInfo->OA_CAM_CTRL_MAX( OA_CAM_CTRL_SATURATION ) =
+              controlCaps.MaxValue;
+          commonInfo->OA_CAM_CTRL_STEP( OA_CAM_CTRL_SATURATION ) = 1;
+          commonInfo->OA_CAM_CTRL_DEF( OA_CAM_CTRL_SATURATION ) =
+              controlCaps.DefaultValue;
+          p_SVBGetControlValue ( cameraInfo->cameraId, c, &currentValue,
+              &autoSetting );
+          cameraInfo->currentSaturation = currentValue;
+          if ( controlCaps.IsAutoSupported ) {
+            camera->OA_CAM_CTRL_AUTO_TYPE( OA_CAM_CTRL_SATURATION ) =
+                OA_CTRL_TYPE_BOOLEAN;
+            commonInfo->OA_CAM_CTRL_AUTO_MIN( OA_CAM_CTRL_SATURATION ) = 0;
+            commonInfo->OA_CAM_CTRL_AUTO_MAX( OA_CAM_CTRL_SATURATION ) = 1;
+            commonInfo->OA_CAM_CTRL_AUTO_STEP( OA_CAM_CTRL_SATURATION ) = 1;
+            commonInfo->OA_CAM_CTRL_AUTO_DEF( OA_CAM_CTRL_SATURATION ) =
+                cameraInfo->autoSaturation = autoSetting;
+          }
+          break;
 
 #if 0
         case SVB_BANDWIDTHOVERLOAD:
@@ -365,7 +449,22 @@ oaSVBInitCamera ( oaCameraDevice* device )
           break;
 
 #if 0
-        case SVB_COOLER_ON:
+        case SVB_BAD_PIXEL_CORRECTION_ENABLE:
+          camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_COOLER ) =
+                OA_CTRL_TYPE_BOOLEAN;
+          commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_COOLER ) =
+                controlCaps.MinValue;
+          commonInfo->OA_CAM_CTRL_MAX( OA_CAM_CTRL_COOLER ) =
+                controlCaps.MaxValue;
+          commonInfo->OA_CAM_CTRL_STEP( OA_CAM_CTRL_COOLER ) = 1;
+          commonInfo->OA_CAM_CTRL_DEF( OA_CAM_CTRL_COOLER ) =
+                controlCaps.DefaultValue;
+          p_SVBGetControlValue ( cameraInfo->cameraId, c, &currentValue,
+              &autoSetting );
+          cameraInfo->coolerEnabled = currentValue;
+          break;
+
+        case SVB_BAD_PIXEL_CORRECTION_THRESHOLD:
           camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_COOLER ) =
                 OA_CTRL_TYPE_BOOLEAN;
           commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_COOLER ) =
@@ -380,7 +479,6 @@ oaSVBInitCamera ( oaCameraDevice* device )
           cameraInfo->coolerEnabled = currentValue;
           break;
 #endif
-
 #if 0
         case SVB_MONO_BIN:
           camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_MONO_BIN_COLOUR ) =
@@ -398,8 +496,7 @@ oaSVBInitCamera ( oaCameraDevice* device )
           break;
 #endif
 
-#if 0
-        case SVB_FAN_ON:
+/*        case SVB_COOLER_ENABLE:
           camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_FAN ) =
                 OA_CTRL_TYPE_BOOLEAN;
           commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_FAN ) = controlCaps.MinValue;
@@ -411,8 +508,7 @@ oaSVBInitCamera ( oaCameraDevice* device )
               &autoSetting );
           cameraInfo->fanEnabled = currentValue;
           break;
-#endif
-
+*/
 #if 0
         case SVB_PATTERN_ADJUST:
           camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_PATTERN_ADJUST ) =
@@ -468,8 +564,22 @@ oaSVBInitCamera ( oaCameraDevice* device )
           break;
 #endif
 
-#if 0
-        case SVB_TARGET_TEMP:
+        case SVB_COOLER_ENABLE:
+          camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_COOLER ) =
+                OA_CTRL_TYPE_BOOLEAN;
+          commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_COOLER ) =
+                controlCaps.MinValue;
+          commonInfo->OA_CAM_CTRL_MAX( OA_CAM_CTRL_COOLER ) =
+                controlCaps.MaxValue;
+          commonInfo->OA_CAM_CTRL_STEP( OA_CAM_CTRL_COOLER ) = 1;
+          commonInfo->OA_CAM_CTRL_DEF( OA_CAM_CTRL_COOLER ) =
+                controlCaps.DefaultValue;
+          p_SVBGetControlValue ( cameraInfo->cameraId, c, &currentValue,
+              &autoSetting );
+          cameraInfo->currentCoolerEnabled = currentValue;
+          break;
+
+        case SVB_TARGET_TEMPERATURE:
           camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_TEMP_SETPOINT ) =
                 OA_CTRL_TYPE_INT32;
           commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_TEMP_SETPOINT ) =
@@ -483,12 +593,9 @@ oaSVBInitCamera ( oaCameraDevice* device )
               &autoSetting );
           cameraInfo->currentSetPoint = currentValue;
           break;
-#endif
 
-#if 0
-        case SVB_COOLER_POWER_PERC:
+        case SVB_COOLER_POWER:
           // Ignore this one -- it's read-only anyhow
-/*
           camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_COOLER_POWER ) =
                 OA_CTRL_TYPE_INT32;
           commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_COOLER_POWER ) =
@@ -501,9 +608,23 @@ oaSVBInitCamera ( oaCameraDevice* device )
           p_SVBGetControlValue ( cameraInfo->cameraId, c, &currentValue,
               &autoSetting );
           cameraInfo->currentCoolerPower = currentValue;
-*/
           break;
-#endif
+
+        case SVB_CURRENT_TEMPERATURE:
+          camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_TEMPERATURE ) =
+                OA_CTRL_TYPE_INT32;
+          commonInfo->OA_CAM_CTRL_MIN( OA_CAM_CTRL_TEMPERATURE ) =
+                controlCaps.MinValue;
+          commonInfo->OA_CAM_CTRL_MAX( OA_CAM_CTRL_TEMPERATURE ) =
+                controlCaps.MaxValue;
+          commonInfo->OA_CAM_CTRL_STEP( OA_CAM_CTRL_TEMPERATURE ) = 1;
+          commonInfo->OA_CAM_CTRL_DEF( OA_CAM_CTRL_TEMPERATURE ) =
+              controlCaps.DefaultValue;
+          p_SVBGetControlValue ( cameraInfo->cameraId, c, &currentValue,
+              &autoSetting );
+          cameraInfo->currentTemperature = currentValue;
+         oaLogDebug ( OA_LOG_CAMERA, "Temperatura = %d" , currentValue);
+          break;
 
 #if 0
         case SVB_AUTO_MAX_GAIN:
@@ -539,7 +660,7 @@ oaSVBInitCamera ( oaCameraDevice* device )
       sizeof ( camProps.SupportedBins ));
   i = 0;
   while (( bin = camProps.SupportedBins[i] )) {
-    if ( 2 == bin || 3 == bin || 4 == bin ) {
+    if ( 2 == bin || 3 == bin || 4 == bin ) { // Only onr type of binning?
       camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_BINNING ) = OA_CTRL_TYPE_DISCRETE;
     }
     i++;
@@ -573,8 +694,8 @@ oaSVBInitCamera ( oaCameraDevice* device )
               oaFrameFormats[ OA_PIX_FMT_BGR24 ].bitsPerPixel;
         }
         break;
-      case SVB_IMG_Y8:
       case SVB_IMG_RAW8:
+      case SVB_IMG_Y8:
         if ( cameraInfo->colour ) {
           switch ( camProps.BayerPattern ) {
             case SVB_BAYER_RG:
@@ -590,7 +711,7 @@ oaSVBInitCamera ( oaCameraDevice* device )
               camera->frameFormats[ OA_PIX_FMT_GBRG8 ] = 1;
               break;
           }
-					camera->features.flags |= OA_CAM_FEATURE_RAW_MODE;
+         camera->features.flags |= OA_CAM_FEATURE_RAW_MODE;
         } else {
           camera->frameFormats[ OA_PIX_FMT_GREY8 ] = 1;
           cameraInfo->greyscaleMode = f;
@@ -599,6 +720,7 @@ oaSVBInitCamera ( oaCameraDevice* device )
         }
         break;
       case SVB_IMG_RAW16:
+      case SVB_IMG_Y16:
         if ( cameraInfo->colour ) {
           switch ( camProps.BayerPattern ) {
             case SVB_BAYER_RG:
@@ -614,9 +736,12 @@ oaSVBInitCamera ( oaCameraDevice* device )
               camera->frameFormats[ OA_PIX_FMT_GBRG16LE ] = 1;
               break;
           }
-					camera->features.flags |= OA_CAM_FEATURE_RAW_MODE;
+         camera->features.flags |= OA_CAM_FEATURE_RAW_MODE;
         } else {
           camera->frameFormats[ OA_PIX_FMT_GREY16LE ] = 1;
+          cameraInfo->greyscaleMode = f;
+          cameraInfo->currentMode = f;
+          cameraInfo->currentFormat = OA_PIX_FMT_GREY16LE;
         }
         if ( cameraInfo->maxBitDepth < 16 ) {
           cameraInfo->maxBitDepth = 16;
@@ -637,7 +762,7 @@ oaSVBInitCamera ( oaCameraDevice* device )
   camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_FRAME_FORMAT ) = OA_CTRL_TYPE_DISCRETE;
   cameraInfo->binMode = OA_BIN_MODE_NONE;
 
-  for ( i = 1; i <= OA_MAX_BINNING; i++ ) {
+  for ( i = 1; i <= OA_MAX_BINNING; i++ ) { // This does not exist, camera only support one size
     cameraInfo->frameSizes[i].numSizes = 0;
     cameraInfo->frameSizes[i].sizes = 0;
   }
@@ -652,12 +777,13 @@ oaSVBInitCamera ( oaCameraDevice* device )
   cameraInfo->frameSizes[1].sizes[0].x = cameraInfo->maxResolutionX;
   cameraInfo->frameSizes[1].sizes[0].y = cameraInfo->maxResolutionY;
   cameraInfo->frameSizes[1].numSizes = 1;
+
   // Fake up some resolutions for 2x binning
   if ( camera->OA_CAM_CTRL_TYPE( OA_CAM_CTRL_BINNING )) {
     if (!( cameraInfo->frameSizes[2].sizes =
         ( FRAMESIZE* ) malloc ( sizeof ( FRAMESIZE )))) {
       oaLogError ( OA_LOG_CAMERA, "%s: malloc ( FRAMESIZE ) failed", __func__ );
-      free (( void* ) cameraInfo->frameSizes[1].sizes );
+      free (( void* ) cameraInfo->frameSizes[2].sizes );
       FREE_DATA_STRUCTS;
       return 0;
     }
@@ -673,7 +799,7 @@ oaSVBInitCamera ( oaCameraDevice* device )
 
   p_SVBSetROIFormat ( cameraInfo->cameraId, 0, 0, cameraInfo->xSize,
       cameraInfo->ySize, cameraInfo->binMode );
-	p_SVBSetOutputImageType ( cameraInfo->cameraId, cameraInfo->currentMode );
+  p_SVBSetOutputImageType ( cameraInfo->cameraId, cameraInfo->currentMode );
 
   // The largest buffer size we should need
   // RGB colour is 3 bytes per pixel, mono one for 8-bit, two for 16-bit,
@@ -749,6 +875,7 @@ oaSVBInitCamera ( oaCameraDevice* device )
     return 0;
   }
 
+  oaLogDebug ( OA_LOG_CAMERA, "X = %d / Y = %d", cameraInfo->xSize, cameraInfo->ySize);
   oaLogInfo ( OA_LOG_CAMERA, "%s: exiting", __func__ );
 
   return camera;

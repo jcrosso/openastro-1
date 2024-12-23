@@ -164,7 +164,7 @@ ZoomWidget::ZoomWidget ( QWidget* parent ) : QGroupBox ( parent )
 
   zoomSlider = new QSlider ( Qt::Horizontal, this );
   zoomSlider->setToolTip ( tr ( "Slide to rescale preview image" ));
-  zoomSlider->setMinimum ( 25 );
+  zoomSlider->setMinimum ( 10 );
   zoomSlider->setMaximum ( 300 );
   zoomSlider->setValue ( config.zoomValue );
   connect ( zoomSlider, SIGNAL( valueChanged ( int )), this,

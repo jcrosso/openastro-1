@@ -42,27 +42,29 @@ oaSVBCameraTestROISize ( oaCamera* camera, unsigned int tryX,
   SVB_STATE*	cameraInfo = camera->_private;
 
   // USB3 cameras have different rules
-
   if ( cameraInfo->usb3Cam ) {
-    if ( tryX % 4 == 0 && tryY % 2 == 0 ) {
+    if ( tryX % 8 == 0 && tryY % 2 == 0 ) {
       if (( tryX * cameraInfo->binMode ) <= cameraInfo->frameSizes[1].sizes[0].x
           && ( tryY * cameraInfo->binMode ) <=
           cameraInfo->frameSizes[1].sizes[0].y ) {
+        oaLogDebug(OA_LOG_CAMERA, "tryX = %d / tryY = %d", tryX, tryY);
         return OA_ERR_NONE;
       }
     }
-    *suggX = ( tryX & ~0x3 ) + 4;
+    *suggX = ( tryX & ~0x7 );
     if (( *suggX * cameraInfo->binMode ) >
         cameraInfo->frameSizes[1].sizes[0].x ) {
       *suggX = cameraInfo->frameSizes[ cameraInfo->binMode ].sizes[0].x;
     }
-    *suggY = ( tryX & ~0x1 ) + 2;
+    *suggY = ( tryX & ~0x1 );
     if (( *suggY * cameraInfo->binMode ) >
         cameraInfo->frameSizes[1].sizes[0].y ) {
       *suggY = cameraInfo->frameSizes[ cameraInfo->binMode ].sizes[0].y;
     }
+    oaLogDebug(OA_LOG_CAMERA, "suggX = %d / suggY = %d", *suggX, *suggY);
     return -OA_ERR_INVALID_SIZE;
   }
+
 
   if ( tryX > 0 && tryY > 0 && ( tryX * tryY ) % 1024 == 0 ) {
     if (( tryX * cameraInfo->binMode ) <= cameraInfo->frameSizes[1].sizes[0].x

@@ -45,10 +45,10 @@ main()
 	oaCameraDevice**		cameraDevs;
 
 	// see include/openastro/util.h for other logging levels
-	oaSetLogLevel ( OA_LOG_INFO );
+	oaSetLogLevel ( OA_LOG_DEBUG );
 
 	// required for logging specific to cameras
-	oaSetLogType ( OA_LOG_CAMERA );
+	oaSetLogType ( OA_LOG_TYPE_ALL );
 
 	// Get list of connected cameras.  Don't filter on any specific feature
 	( void ) oaGetCameras ( &cameraDevs, OA_CAM_FEATURE_NONE );

@@ -27,7 +27,7 @@
 #ifndef OA_TSCAM_CONF_H
 #define OA_TSCAM_CONF_H
 
-#include <tscam.h>
+#include </home/jcrosso/Downloads/openastro/ext/libtscam/tscam.h>
 
 // Defines for:
 //

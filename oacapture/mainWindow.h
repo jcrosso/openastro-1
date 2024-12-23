@@ -39,7 +39,7 @@ extern "C" {
 #include <openastro/camera.h>
 #include <openastro/filterwheel.h>
 #include <openastro/timer.h>
-} 
+}
 
 #include "focusOverlay.h"
 #include "demosaicSettings.h"
@@ -212,7 +212,7 @@ class MainWindow : public QMainWindow
     QList<QAction*>	advancedActions;
     QSplitter*		splitter;
     QColorDialog*	colourDialog;
-    
+
 
   public slots:
     void		connectCamera( int );
@@ -228,6 +228,7 @@ class MainWindow : public QMainWindow
     void		disconnectTimer ( void );
     void		resetTimer ( void );
     void		rescanTimers ( void );
+    void		save ( void );
     void		quit ( void );
     void		enableHistogram ( void );
     void		histogramClosed ( void );

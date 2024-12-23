@@ -223,7 +223,31 @@ _processSetControl ( oaCamera* camera, OA_COMMAND* command )
       cameraInfo->currentGamma = val->int32;
       break;
 
-    case OA_CAM_CTRL_GAIN:
+    case OA_CAM_CTRL_CONTRAST:
+      p_SVBSetControlValue ( cameraInfo->cameraId, SVB_CONTRAST, val->int32,
+          cameraInfo->autoContrast );
+      cameraInfo->currentContrast = val->int32;
+      break;
+
+    case OA_CAM_CTRL_SATURATION:
+      p_SVBSetControlValue ( cameraInfo->cameraId, SVB_SATURATION, val->int32,
+          cameraInfo->autoSaturation );
+      cameraInfo->currentSaturation = val->int32;
+      break;
+
+    case OA_CAM_CTRL_BLACKLEVEL:
+      p_SVBSetControlValue ( cameraInfo->cameraId, SVB_BLACK_LEVEL, val->int32,
+          cameraInfo->autoBlackLevel );
+      cameraInfo->currentBlackLevel = val->int32;
+      break;
+
+    case OA_CAM_CTRL_SHARPNESS:
+      p_SVBSetControlValue ( cameraInfo->cameraId, SVB_SHARPNESS, val->int32,
+          cameraInfo->autoSharpness );
+      cameraInfo->currentSharpness = val->int32;
+      break;
+
+          case OA_CAM_CTRL_GAIN:
       p_SVBSetControlValue ( cameraInfo->cameraId, SVB_GAIN, val->int32,
           cameraInfo->autoGain );
       cameraInfo->currentGain = val->int32;
@@ -313,32 +337,28 @@ _processSetControl ( oaCamera* camera, OA_COMMAND* command )
         case OA_PIX_FMT_BGGR8:
         case OA_PIX_FMT_GRBG8:
         case OA_PIX_FMT_GBRG8:
-          cameraInfo->currentMode = SVB_IMG_RAW8;
+          cameraInfo->currentMode = SVB_IMG_Y8;
           break;
         case OA_PIX_FMT_GREY8:
           cameraInfo->currentMode = cameraInfo->greyscaleMode;
+          cameraInfo->currentMode = SVB_IMG_Y8;
           break;
         case OA_PIX_FMT_RGGB16LE:
         case OA_PIX_FMT_BGGR16LE:
         case OA_PIX_FMT_GRBG16LE:
         case OA_PIX_FMT_GBRG16LE:
+          cameraInfo->currentMode = SVB_IMG_Y16;
+          break;
         case OA_PIX_FMT_GREY16LE:
-          cameraInfo->currentMode = SVB_IMG_RAW16;
+          cameraInfo->currentMode = cameraInfo->greyscaleMode;
+          cameraInfo->currentMode = SVB_IMG_Y16;
           break;
       }
-
       cameraInfo->currentFormat = format;
       cameraInfo->currentBitDepth = oaFrameFormats[ format ].bitsPerPixel;
       _doFrameReconfiguration ( cameraInfo );
       break;
     }
-#if 0
-    case OA_CAM_CTRL_COOLER:
-      p_SVBSetControlValue ( cameraInfo->cameraId, SVB_COOLER_ON,
-          val->boolean, 0 );
-      cameraInfo->coolerEnabled = val->boolean;
-      break;
-#endif
 
 #if 0
     case OA_CAM_CTRL_MONO_BIN_COLOUR:
@@ -372,21 +392,23 @@ _processSetControl ( oaCamera* camera, OA_COMMAND* command )
       break;
 #endif
 
-#if 0
+    case OA_CAM_CTRL_COOLER:
+      p_SVBSetControlValue ( cameraInfo->cameraId, SVB_COOLER_ENABLE,
+          val->boolean, 0 );
+      cameraInfo->currentCoolerEnabled = val->boolean;
+      break;
+
     case OA_CAM_CTRL_TEMP_SETPOINT:
-      p_SVBSetControlValue ( cameraInfo->cameraId, SVB_TARGET_TEMP, val->int32,
+      p_SVBSetControlValue ( cameraInfo->cameraId, SVB_TARGET_TEMPERATURE, val->int32,
           0 );
       cameraInfo->currentSetPoint = val->int32;
       break;
-#endif
 
-#if 0
     case OA_CAM_CTRL_COOLER_POWER:
-      p_SVBSetControlValue ( cameraInfo->cameraId, SVB_COOLER_POWER_PERC,
+      p_SVBSetControlValue ( cameraInfo->cameraId, SVB_COOLER_POWER,
           val->int32, 0 );
       cameraInfo->currentCoolerPower = val->int32;
       break;
-#endif
 
     case OA_CAM_CTRL_MODE_AUTO( OA_CAM_CTRL_GAIN ):
       p_SVBSetControlValue ( cameraInfo->cameraId, SVB_GAIN,
@@ -458,6 +480,7 @@ _processGetControl ( oaCamera* camera, OA_COMMAND* command )
   SVB_STATE*		cameraInfo = camera->_private;
   oaControlValue	*val = command->resultData;
 	long						ctrlVal;
+	bool            boolVal;
 
   switch ( command->controlId ) {
 
@@ -621,15 +644,6 @@ _processGetControl ( oaCamera* camera, OA_COMMAND* command )
     }
 
 #if 0
-    case OA_CAM_CTRL_COOLER:
-      p_SVBGetControlValue ( cameraInfo->cameraId, SVB_COOLER_ON, &ctrlVal,
-					&boolVal );
-			val->valueType = OA_CTRL_TYPE_BOOLEAN;
-			val->boolean = ctrlVal;
-      break;
-#endif
-
-#if 0
     case OA_CAM_CTRL_MONO_BIN_COLOUR:
       p_SVBGetControlValue ( cameraInfo->cameraId, SVB_MONO_BIN, &ctrlVal,
 					&boolVal );
@@ -665,34 +679,34 @@ _processGetControl ( oaCamera* camera, OA_COMMAND* command )
       break;
 #endif
 
-#if 0
+    case OA_CAM_CTRL_COOLER:
+      p_SVBGetControlValue ( cameraInfo->cameraId, SVB_COOLER_ENABLE, &ctrlVal,	&boolVal );
+			val->valueType = OA_CTRL_TYPE_BOOLEAN;
+			val->boolean = ctrlVal;
+      break;
+
     case OA_CAM_CTRL_TEMP_SETPOINT:
-      p_SVBGetControlValue ( cameraInfo->cameraId, SVB_ANTI_DEW_HEATER,
+      p_SVBGetControlValue ( cameraInfo->cameraId, SVB_TARGET_TEMPERATURE,
 					&ctrlVal, &boolVal );
 			val->valueType = OA_CTRL_TYPE_INT32;
 			val->int32 = ctrlVal;
       break;
-#endif
 
-#if 0
     case OA_CAM_CTRL_TEMPERATURE:
-      p_SVBGetControlValue ( cameraInfo->cameraId, SVB_TEMPERATURE, &ctrlVal,
+      p_SVBGetControlValue ( cameraInfo->cameraId, SVB_CURRENT_TEMPERATURE, &ctrlVal,
 					&boolVal );
 			val->valueType = OA_CTRL_TYPE_INT32;
 			val->int32 = ctrlVal;
       break;
-#endif
 
-#if 0
-    case OA_CAM_CTRL_COOLER_POWER:
-      p_SVBGetControlValue ( cameraInfo->cameraId, SVB_COOLER_POWER_PERC,
+     case OA_CAM_CTRL_COOLER_POWER:
+      p_SVBGetControlValue ( cameraInfo->cameraId, SVB_COOLER_POWER,
 					&ctrlVal, &boolVal );
 			val->valueType = OA_CTRL_TYPE_INT32;
 			val->int32 = ctrlVal;
       break;
-#endif
 
-		case OA_CAM_CTRL_DROPPED:
+	 case OA_CAM_CTRL_DROPPED:
 		{
 			int	dropped;
 
@@ -765,7 +779,7 @@ _doFrameReconfiguration ( SVB_STATE* cameraInfo )
   // RGB colour is 3 bytes per pixel, mono one for 8-bit, two for 16-bit,
   // RAW is one for 8-bit, 2 for 16-bit
   multiplier = ( SVB_IMG_RGB24 == cameraInfo->currentMode ) ? 3 :
-      ( SVB_IMG_RAW16 == cameraInfo->currentMode ) ? 2 : 1;
+      ( SVB_IMG_Y16 == cameraInfo->currentMode ) ? 2 : 1;
   pthread_mutex_lock ( &cameraInfo->commandQueueMutex );
   cameraInfo->imageBufferLength = actualX * actualY * multiplier;
   if ( restartStreaming ) {

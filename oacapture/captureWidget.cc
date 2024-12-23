@@ -239,6 +239,8 @@ CaptureWidget::CaptureWidget ( QWidget* parent ) : QGroupBox ( parent )
     countFramesMenu->hide();
   }
 
+  countLabel = new QLabel ( " 0 " );
+
   connect ( framesInputBox, SIGNAL( editingFinished()),
       this, SLOT( changeFramesLimitText()));
   connect ( framesInputBox, SIGNAL( textEdited ( const QString& )),
@@ -258,6 +260,7 @@ CaptureWidget::CaptureWidget ( QWidget* parent ) : QGroupBox ( parent )
   type->addWidget ( countFramesMenu );
   type->addWidget ( countSecondsMenu );
   type->addWidget ( limitTypeMenu );
+  type->addWidget ( countLabel );
   type->addStretch ( 1 );
 
   startButton = new QPushButton (
@@ -331,6 +334,8 @@ CaptureWidget::CaptureWidget ( QWidget* parent ) : QGroupBox ( parent )
       SLOT ( setButtonsForBeginRecording ( int )));
   connect ( this, SIGNAL( configureButtonsAfterStop ( void )), this,
       SLOT ( setButtonsForRecordingStopped ( void )));
+  connect ( this, SIGNAL( changeCountLabel ( QString )), this,
+      SLOT ( updateCountLabel ( QString )));
 }
 
 
@@ -1464,7 +1469,7 @@ CaptureWidget::writeSettings ( OutputHandler* out )
         getCurrentProfileName().toStdString().c_str() << std::endl;
     settings << tr ( "Target: " ).toStdString().c_str() <<
         getCurrentTargetName().toStdString().c_str() << std::endl;
-    
+
     for ( int baseVal = 1; baseVal < OA_CAM_CTRL_LAST_P1; baseVal++ ) {
       for ( int mod = 0; mod <= OA_CAM_CTRL_MODIFIER_AUTO; mod++ ) {
         int c = baseVal | ( mod ? OA_CAM_CTRL_MODIFIER_AUTO_MASK : 0 );
@@ -1708,7 +1713,7 @@ CaptureWidget::writeSettings ( OutputHandler* out )
 			settings << tr ( "Altitude: ").toStdString().c_str() <<
 				commonState.altitude << std::endl;
 		}
-	
+
 		timerResultCode = state.previewWidget->getTimerResultCode();
 		if ( timerResultCode && *timerResultCode ) {
 			settings << tr ( "Timer result code: ").toStdString().c_str() <<
@@ -1739,6 +1744,11 @@ CaptureWidget::updateAutorunLabel ( QString newText )
   autorunLabel->setText ( newText );
 }
 
+void
+CaptureWidget::updateCountLabel ( QString newText )
+{
+  countLabel->setText ( newText );
+}
 
 void
 CaptureWidget::changeStopButtonState ( int newState )
