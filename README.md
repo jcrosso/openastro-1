@@ -1,2 +1,2 @@
 # openastro
-Open Astro Project - SVBony SV605MC
+Open Astro Project - With support for SVBony SV605MC
