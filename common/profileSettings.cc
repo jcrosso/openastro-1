@@ -57,10 +57,10 @@ ProfileSettings::ProfileSettings ( QWidget* parent, trampolineFuncs* redirs ) :
   targetLabel = new QLabel ( tr ( "Target: " ), this );
   targetMenu = new QComboBox ( this );
   for ( int i = 0; i < NUM_TARGETS; i++ ) {
-    if ( i != TGT_EARTH ) {
+  //  if ( i != TGT_EARTH ) {
       QVariant v(i);
       targetMenu->addItem ( targetName ( i ), v );
-    }
+  //  }
   }
   targetMenu->setEnabled ( 0 );
   connect ( targetMenu, SIGNAL( currentIndexChanged ( int )), this,

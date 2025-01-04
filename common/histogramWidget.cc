@@ -150,7 +150,12 @@ HistogramWidget::paintEvent ( QPaintEvent* event )
   }
 
   char s[40];
-  QPainter painter ( this );
+  char l[10] = "";
+    QPainter painter ( this );
+
+  if ( histogramConf.logHistogram ) {
+    strcpy(l," - log");
+  }
 
   painter.setRenderHint ( QPainter::Antialiasing, false );
 
@@ -174,12 +179,12 @@ HistogramWidget::paintEvent ( QPaintEvent* event )
   if ( fullIntensity ) {
     if ( colours > 1 ) {
       painter.setPen ( QPen ( Qt::red, 1, Qt::SolidLine, Qt::FlatCap ));
-      sprintf ( s, "%d (%d%%)", maxRedIntensity,
-          int ( float ( maxRedIntensity ) / fullIntensity * 100 ));
+      sprintf ( s, "%d (%d%%)%s", maxRedIntensity,
+          int ( float ( maxRedIntensity ) / fullIntensity * 100 ), l );
     } else {
       painter.setPen ( QPen ( Qt::gray, 1, Qt::SolidLine, Qt::FlatCap ));
-      sprintf ( s, "%d (%d%%)", maxIntensity,
-          int ( float ( maxIntensity ) / fullIntensity * 100 ));
+      sprintf ( s, "%d (%d%%)%s", maxIntensity,
+          int ( float ( maxIntensity ) / fullIntensity * 100 ) , l );
     }
     painter.drawText ( 25, 15, s );
     for ( int i = 0; i < 256; i++ ) {
@@ -192,8 +197,8 @@ HistogramWidget::paintEvent ( QPaintEvent* event )
 
       painter.setPen ( QPen ( Qt::darkGreen, 1, Qt::SolidLine, Qt::FlatCap ));
 
-      sprintf ( s, "%d (%d%%)", maxGreenIntensity,
-          int ( float ( maxGreenIntensity ) / fullIntensity * 100 ));
+      sprintf ( s, "%d (%d%%)%s", maxGreenIntensity,
+          int ( float ( maxGreenIntensity ) / fullIntensity * 100 ), l);
       painter.drawText ( 105, 15, s );
 
       int offset;
@@ -210,8 +215,8 @@ HistogramWidget::paintEvent ( QPaintEvent* event )
       painter.setOpacity ( 1 );
       offset = showingThreeGraphs ? 424 : 124;
       painter.setPen ( QPen ( Qt::blue, 1, Qt::SolidLine, Qt::FlatCap ));
-      sprintf ( s, "%d (%d%%)", maxBlueIntensity,
-          int ( float ( maxBlueIntensity ) / fullIntensity * 100 ));
+      sprintf ( s, "%d (%d%%)%s", maxBlueIntensity,
+          int ( float ( maxBlueIntensity ) / fullIntensity * 100 ), l );
       painter.drawText ( 185, 15, s );
 
     if ( !showingThreeGraphs ) {
@@ -308,6 +313,9 @@ HistogramWidget::_processGreyscaleHistogram ( void* imageData,
   }
   for ( i = 0; i < 256; i++ ) {
     grey[i] = grey[i] * 100 / maxCount;
+   if ( histogramConf.logHistogram ) {
+      grey[i] = 50 * log10 ( grey[i] + 1 );
+   }  
   }
 }
 

@@ -84,8 +84,8 @@ oaSVBCameraTestROISize ( oaCamera* camera, unsigned int tryX,
     done = cameraInfo->frameSizes[ cameraInfo->binMode ].numSizes;
   }
 
-  *suggX = cameraInfo->frameSizes[ cameraInfo->binMode ].sizes[done].x;
-  *suggY = cameraInfo->frameSizes[ cameraInfo->binMode ].sizes[done].y;
-
+  *suggX = cameraInfo->frameSizes[ cameraInfo->binMode ].sizes[done - 1].x;
+  *suggY = cameraInfo->frameSizes[ cameraInfo->binMode ].sizes[done - 1].y;
+  oaLogDebug(OA_LOG_CAMERA, "suggX = %d / suggY = %d", *suggX, *suggY);
   return -OA_ERR_INVALID_SIZE;
 }

@@ -161,7 +161,7 @@ class MainWindow : public QMainWindow
     QAction*		derotate;
     QAction*		flipX;
     QAction*		flipY;
-    QAction*    	occultations;
+    QAction*    occultations;
     QAction*		demosaicOpt;
     QAction*		hideControls;
     QAction*		general;
@@ -229,6 +229,8 @@ class MainWindow : public QMainWindow
     void		resetTimer ( void );
     void		rescanTimers ( void );
     void		save ( void );
+    void		saveas ( void );
+    void    load ( void );
     void		quit ( void );
     void		enableHistogram ( void );
     void		histogramClosed ( void );
@@ -240,7 +242,7 @@ class MainWindow : public QMainWindow
     void		enableDemosaic ( void );
     void		enableNightMode ( void );
     void		enableColouriseMode ( void );
-    void                enablePreviewMode ( void );
+    void    enablePreviewMode ( void );
     void		aboutDialog ( void );
     void		doGeneralSettings ( void );
     void		doCaptureSettings ( void );

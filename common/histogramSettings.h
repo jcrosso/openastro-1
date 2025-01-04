@@ -43,6 +43,7 @@ typedef struct {
 	int			splitHistogram;
 	int			histogramOnTop;
 	int			rawRGBHistogram;
+  int     logHistogram;
 } histogramConfig;
 
 extern histogramConfig histogramConf;
@@ -60,6 +61,7 @@ class HistogramSettings : public QWidget
     QCheckBox*		rawRGBBox;
     QCheckBox*		splitBox;
     QCheckBox*		onTopBox;
+    QCheckBox*    logHistogram;
     QVBoxLayout*	box;
 		trampolineFuncs*	trampolines;
 };

@@ -135,14 +135,40 @@ OutputHandler::generateFilename ( void )
   filename.replace ( "%x", exposureMs );
   filename.replace ( "%X", exposureS );
 
+  QString extPath = "";
+  QString d;
   if ( filename[0] != '/' ) {
-		QString d = commonConfig.captureDirectory;
+    d = commonConfig.captureDirectory;
     if ( d == "" ) {
 			d = commonState.currentDirectory;
     }
-    filename = d + "/" + filename;
+    if ( commonConfig.dirProfile ) {
+      extPath = d + "/" + trampolines->getCurrentProfileName();
+      if ( !QDir(extPath).exists() ) {
+        QDir().mkdir(extPath);
+      }
+      if ( commonConfig.dirDate ) {
+        extPath = extPath + "/" + date;
+        if ( !QDir(extPath).exists() ) {
+          QDir().mkdir(extPath);
+        }
+      }
+    }
+    else {
+      if ( commonConfig.dirDate ) {
+        extPath = d + "/" + date;
+        if ( !QDir(extPath).exists() ) {
+          QDir().mkdir(extPath);
+        }
+      }
+      else {
+        extPath = d;
+      }
+    }
   }
-
+  if ( extPath != "" ) {
+    filename = extPath + "/" + filename;
+  }
   fullSaveFilePath = "";
 }
 

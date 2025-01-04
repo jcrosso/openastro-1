@@ -423,7 +423,7 @@ ImageWidget::setUserROI ( void )
     }
     commonConfig.imageSizeX = x;
     commonConfig.imageSizeY = y;
-    roiYSize->setText ( QString::number ( commonConfig.imageSizeX ));
+    roiXSize->setText ( QString::number ( commonConfig.imageSizeX ));
     roiYSize->setText ( QString::number ( commonConfig.imageSizeY ));
     doResolutionChange ( 1 );
     userROI->setChecked ( true );

@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
-AC_INIT([openastro], [1.9.0], [james@openastroproject.org])
+AC_PREREQ([2.71])
+AC_INIT([openastro],[1.9.0],[james@openastroproject.org])
 AC_CONFIG_SRCDIR([liboademosaic/oademosaic.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -24,7 +24,7 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_LIBTOOL
+LT_INIT
 
 AC_ARG_VAR(MOC,Path to moc executable)
 AC_ARG_VAR(UIC,Path to uic executable)
@@ -1300,8 +1300,7 @@ FFMPEG_LIBS="\$(top_builddir)/ext/ffmpeg/libavformat/libavformat.a \
                \$(top_builddir)/ext/ffmpeg/libavutil/libavutil.a"
 
 AC_ARG_WITH(ffmpeg-extra-configure, 
-  AC_HELP_STRING([--with-ffmpeg-extra-configure="xxx"],
-  [extra configure options for internal ffmpeg ./configure script]),,
+  AS_HELP_STRING([--with-ffmpeg-extra-configure="xxx"],[extra configure options for internal ffmpeg ./configure script]),,
   with_ffmpeg_extra_configure=no)
 
 embffmpeg_configure_args="--prefix=$prefix"
@@ -1381,8 +1380,7 @@ then
 	fi
 
   AC_ARG_WITH(libusb-extra-configure, 
-    AC_HELP_STRING([--with-libusb-extra-configure="xxx"],
-    [extra configure options for internal libusb ./configure script]),,
+    AS_HELP_STRING([--with-libusb-extra-configure="xxx"],[extra configure options for internal libusb ./configure script]),,
     with_libusb_extra_configure=no)
 
   emblibusb_configure_args="--prefix=$prefix"
@@ -1440,8 +1438,7 @@ then
   fi
 
   AC_ARG_WITH(libhidapi-extra-configure,
-    AC_HELP_STRING([--with-libhidapi-extra-configure="xxx"],
-    [extra configure options for internal libhidapi ./configure script]),,
+    AS_HELP_STRING([--with-libhidapi-extra-configure="xxx"],[extra configure options for internal libhidapi ./configure script]),,
     with_libhidapi_extra_configure=no)
 
   emblibhidapi_configure_args="--prefix=$prefix"
@@ -1504,8 +1501,7 @@ then
 # fi
 
   AC_ARG_WITH(libdc1394-extra-configure,
-    AC_HELP_STRING([--with-libdc1394-extra-configure="xxx"],
-    [extra configure options for internal libdc1394 ./configure script]),,
+    AS_HELP_STRING([--with-libdc1394-extra-configure="xxx"],[extra configure options for internal libdc1394 ./configure script]),,
     with_libdc1394_extra_configure=no)
 
   emblibdc1394_configure_args="--prefix=$prefix --disable-shared --disable-sdltest --disable-examples"
@@ -1675,7 +1671,7 @@ if test "x$use_system_libuvc" == "xno"; then
 fi
 
 AC_ARG_WITH(libudev,
-  AC_HELP_STRING([--with-libudev],[build with libudev]),have_libudev=$with_libudev,with_libudev=$libudev_default)
+  AS_HELP_STRING([--with-libudev],[build with libudev]),have_libudev=$with_libudev,with_libudev=$libudev_default)
 
 if test "x$with_libudev" != "xno"; then
   with_libudev=no

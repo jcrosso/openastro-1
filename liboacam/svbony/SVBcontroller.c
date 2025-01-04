@@ -741,6 +741,7 @@ _doFrameReconfiguration ( SVB_STATE* cameraInfo )
   int		multiplier;
   int		restartStreaming = 0;
   unsigned int	actualX, actualY;
+  int    iStartX, iStartY;
 
   pthread_mutex_lock ( &cameraInfo->commandQueueMutex );
   if ( cameraInfo->runMode == CAM_RUN_MODE_STREAMING ) {
@@ -760,10 +761,23 @@ _doFrameReconfiguration ( SVB_STATE* cameraInfo )
   if (( actualY * cameraInfo->binMode ) > cameraInfo->maxResolutionY ) {
     actualY = cameraInfo->maxResolutionY / cameraInfo->binMode;
   }
-  p_SVBSetROIFormat ( cameraInfo->cameraId,
-			( cameraInfo->maxResolutionX - cameraInfo->xSize ) / 2, cameraInfo->xSize,
-			( cameraInfo->maxResolutionY - cameraInfo->ySize ) / 2, cameraInfo->ySize,
-			cameraInfo->binMode );
+
+  oaLogDebug ( OA_LOG_CAMERA, "xSize=%i, ySize=%i, actualX=%i, actualY=%i, maxResolutionX=%i, maxResolutionY=%i, binMode=%i", 
+  cameraInfo->xSize, cameraInfo->ySize, actualX, actualY, cameraInfo->maxResolutionX, cameraInfo->maxResolutionY, cameraInfo->binMode );
+
+  if ( cameraInfo->xSize < cameraInfo->maxResolutionX / cameraInfo->binMode ) {
+    iStartX = ( cameraInfo->maxResolutionX / cameraInfo->binMode - cameraInfo->xSize ) / 2;
+  } else {
+    iStartX = 0;
+  }
+  if ( cameraInfo->ySize < cameraInfo->maxResolutionY / cameraInfo->binMode ) {
+    iStartY = ( cameraInfo->maxResolutionY / cameraInfo->binMode - cameraInfo->ySize ) / 2;
+  } else {
+    iStartY = 0;
+  }
+
+  p_SVBSetROIFormat ( cameraInfo->cameraId, iStartX, iStartY, 
+      cameraInfo->xSize, cameraInfo->ySize, cameraInfo->binMode );
   p_SVBSetOutputImageType ( cameraInfo->cameraId, cameraInfo->currentMode );
 
   if ( OA_BIN_MODE_NONE == cameraInfo->binMode &&

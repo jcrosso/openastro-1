@@ -43,10 +43,13 @@ HistogramSettings::HistogramSettings ( QWidget* parent,
   splitBox->setChecked ( histogramConf.splitHistogram );
   onTopBox = new QCheckBox ( tr ( "Keep histogram window on top" ), this );
   onTopBox->setChecked ( histogramConf.histogramOnTop );
+  logHistogram = new QCheckBox ( tr ( "Logarithmic Y axis" ), this );
+  logHistogram->setChecked ( histogramConf.logHistogram );
   box = new QVBoxLayout ( this );
   box->addWidget ( rawRGBBox );
   box->addWidget ( splitBox );
   box->addWidget ( onTopBox );
+  box->addWidget ( logHistogram );
   box->addStretch ( 1 );
   setLayout ( box );
   connect ( splitBox, SIGNAL ( stateChanged ( int )), parent,
@@ -55,6 +58,8 @@ HistogramSettings::HistogramSettings ( QWidget* parent,
       SLOT ( dataChanged()));
   connect ( rawRGBBox, SIGNAL ( stateChanged ( int )), parent,
       SLOT ( dataChanged()));
+  connect ( logHistogram, SIGNAL ( stateChanged ( int )), parent,
+      SLOT ( dataChanged()));      
 }
 
 
@@ -71,4 +76,5 @@ HistogramSettings::storeSettings ( void )
   trampolines->updateHistogramLayout();
   histogramConf.histogramOnTop = onTopBox->isChecked() ? 1 : 0;
   histogramConf.rawRGBHistogram = rawRGBBox->isChecked() ? 1 : 0;
+  histogramConf.logHistogram = logHistogram->isChecked() ? 1 : 0;
 }

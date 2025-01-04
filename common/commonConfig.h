@@ -53,6 +53,8 @@ typedef struct
   int							secondsLimitValue;
   int							framesLimitValue;
   int							limitType;
+  int							dirProfile;
+  int							dirDate;	
 
 	// options
 	int							demosaic;

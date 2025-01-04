@@ -239,8 +239,6 @@ CaptureWidget::CaptureWidget ( QWidget* parent ) : QGroupBox ( parent )
     countFramesMenu->hide();
   }
 
-  countLabel = new QLabel ( " 0 " );
-
   connect ( framesInputBox, SIGNAL( editingFinished()),
       this, SLOT( changeFramesLimitText()));
   connect ( framesInputBox, SIGNAL( textEdited ( const QString& )),
@@ -254,13 +252,26 @@ CaptureWidget::CaptureWidget ( QWidget* parent ) : QGroupBox ( parent )
   connect ( countSecondsMenu, SIGNAL( currentIndexChanged ( int )),
       this, SLOT( changeSecondsLimitText()));
 
+  dirProfileCheckbox = new QCheckBox ( tr ( "DP" ), this );
+  dirProfileCheckbox->setToolTip ( tr ( "Add profile to capture path" ));
+  dirProfileCheckbox->setChecked ( commonConfig.dirProfile );
+  connect ( dirProfileCheckbox, SIGNAL( stateChanged ( int )), this,
+      SLOT( setDirProfile ( int )));
+
+  dirDateCheckbox = new QCheckBox ( tr ( "DD" ), this );
+  dirDateCheckbox->setToolTip ( tr ( "Add date to capture path" ));
+  dirDateCheckbox->setChecked ( commonConfig.dirDate );
+  connect ( dirDateCheckbox, SIGNAL( stateChanged ( int )), this,
+      SLOT( setDirDate ( int )));
+
   type->addWidget ( typeLabel );
   type->addWidget ( typeMenu );
   type->addWidget ( limitCheckbox );
   type->addWidget ( countFramesMenu );
   type->addWidget ( countSecondsMenu );
   type->addWidget ( limitTypeMenu );
-  type->addWidget ( countLabel );
+  type->addWidget ( dirProfileCheckbox );
+  type->addWidget ( dirDateCheckbox );
   type->addStretch ( 1 );
 
   startButton = new QPushButton (
@@ -334,8 +345,6 @@ CaptureWidget::CaptureWidget ( QWidget* parent ) : QGroupBox ( parent )
       SLOT ( setButtonsForBeginRecording ( int )));
   connect ( this, SIGNAL( configureButtonsAfterStop ( void )), this,
       SLOT ( setButtonsForRecordingStopped ( void )));
-  connect ( this, SIGNAL( changeCountLabel ( QString )), this,
-      SLOT ( updateCountLabel ( QString )));
 }
 
 
@@ -1076,6 +1085,26 @@ CaptureWidget::changeSecondsLimitText ( void )
 
 
 void
+CaptureWidget::setDirProfile ( int state )
+{
+  if ( state == Qt::Unchecked ) {
+    commonConfig.dirProfile = 0;
+  } else {
+    commonConfig.dirProfile = 1;
+  }
+}
+
+void
+CaptureWidget::setDirDate ( int state )
+{
+  if ( state == Qt::Unchecked ) {
+    commonConfig.dirDate = 0;
+  } else {
+    commonConfig.dirDate = 1;
+  }
+}
+
+void
 CaptureWidget::changeFramesLimitCount ( int index )
 {
   Q_UNUSED ( index )
@@ -1742,12 +1771,6 @@ void
 CaptureWidget::updateAutorunLabel ( QString newText )
 {
   autorunLabel->setText ( newText );
-}
-
-void
-CaptureWidget::updateCountLabel ( QString newText )
-{
-  countLabel->setText ( newText );
 }
 
 void

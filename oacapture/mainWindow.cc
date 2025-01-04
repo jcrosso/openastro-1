@@ -81,7 +81,7 @@ MainWindow::MainWindow ( QString configFile )
 
 if (configFile == "")
  {
-  configFile = "casinada.ini";
+  configFile = "default.ini";
  }
   commonState.localState = &state;
   userConfigFile = configFile;
@@ -269,7 +269,7 @@ MainWindow::~MainWindow()
   if ( resetTimerDevice ) {
     delete resetTimerDevice;
   }
-  // delete saveConfigAs;
+  delete saveConfigAs;
   delete saveConfig;
   delete loadConfig;
   delete capturedValue;
@@ -387,8 +387,12 @@ MainWindow::readConfig ( QString configFile )
     commonConfig.framesLimitValue = 0;
     commonConfig.secondsLimitValue = 0;
     commonConfig.limitType = 0;
+    commonConfig.dirProfile = 0;
+    commonConfig.dirDate = 0;
     commonConfig.fileNameTemplate = QString ( "oaCapture-%DATE-%TIME" );
     commonConfig.captureDirectory = QString ( defaultDir );
+    commonConfig.dirProfile = 0;
+    commonConfig.dirDate = 0;
 
     autorunConf.autorunCount = 0;
     autorunConf.autorunDelay = 0;
@@ -408,6 +412,7 @@ MainWindow::readConfig ( QString configFile )
     histogramConf.splitHistogram = 0;
     histogramConf.histogramOnTop = 1;
     histogramConf.rawRGBHistogram = 1;
+    histogramConf.logHistogram = 1;
 
     demosaicConf.demosaicPreview = 0;
     demosaicConf.demosaicOutput = 0;
@@ -545,6 +550,9 @@ MainWindow::readConfig ( QString configFile )
     commonConfig.secondsLimitValue = settings->value (
 				"control/secondsLimitValue", 0 ).toInt();
     commonConfig.limitType = settings->value ( "control/limitType", 0 ).toInt();
+    commonConfig.dirProfile = settings->value ( "control/dirProfile", 0 ).toInt();
+    commonConfig.dirDate = settings->value ( "control/dirDate", 0 ).toInt();
+    
     commonConfig.fileNameTemplate = settings->value (
 				"control/fileNameTemplate", "oaCapture-%DATE-%TIME" ).toString();
     commonConfig.captureDirectory = settings->value (
@@ -570,6 +578,8 @@ MainWindow::readConfig ( QString configFile )
 				"histogram/onTop", 1 ).toInt();
     histogramConf.rawRGBHistogram = settings->value (
 				"histogram/rawRGB", 1 ).toInt();
+    histogramConf.logHistogram = settings->value (
+				"histogram/log", 1 ).toInt();    
 
     demosaicConf.demosaicPreview = settings->value ( "demosaic/preview",
 				0 ).toInt();
@@ -1087,6 +1097,9 @@ MainWindow::writeConfig ( QString configFile )
   settings->setValue ( "control/secondsLimitValue",
 			commonConfig.secondsLimitValue );
   settings->setValue ( "control/limitType", commonConfig.limitType );
+  settings->setValue ( "control/dirProfile", commonConfig.dirProfile );
+  settings->setValue ( "control/dirDate", commonConfig.dirDate );
+  
   settings->setValue ( "control/fileNameTemplate",
 			commonConfig.fileNameTemplate );
   settings->setValue ( "control/captureDirectory",
@@ -1106,6 +1119,8 @@ MainWindow::writeConfig ( QString configFile )
   settings->setValue ( "histogram/split", histogramConf.splitHistogram );
   settings->setValue ( "histogram/onTop", histogramConf.histogramOnTop );
   settings->setValue ( "histogram/rawRGB", histogramConf.rawRGBHistogram );
+  settings->setValue ( "histogram/log", histogramConf.logHistogram );
+  
 
   settings->setValue ( "demosaic/preview", demosaicConf.demosaicPreview );
   settings->setValue ( "demosaic/output", demosaicConf.demosaicOutput );
@@ -1306,9 +1321,9 @@ MainWindow::createStatusBar ( void )
   setStatusBar ( statusLine );
 
   capturedLabel = new QLabel ( tr ( "Captured" ));
-  capturedLabel->setFixedWidth ( 60 );
+  capturedLabel->setFixedWidth ( 65 );
   droppedLabel = new QLabel ( tr ( "Dropped" ));
-  droppedLabel->setFixedWidth ( 55 );
+  droppedLabel->setFixedWidth ( 60 );
   progressBar = new QProgressBar;
   progressBar->setFixedWidth ( 200 );
   progressBar->setRange ( 0, 100 );
@@ -1333,16 +1348,20 @@ MainWindow::createMenus ( void )
   // FIX ME -- add "restore program defaults" option
 
   // File menu
-  loadConfig = new QAction ( tr ( "Re&load Config" ), this );
-  loadConfig->setStatusTip ( tr ( "Load default configuration" ));
-  // FIX ME - set up slots
+  loadConfig = new QAction ( tr ( "&Load Config" ), this );
+  loadConfig->setShortcut ( QKeySequence::Open );
+  loadConfig->setStatusTip ( tr ( "Load configuration" ));
+  connect ( loadConfig, SIGNAL( triggered()), this, SLOT(load()));
 
   saveConfig = new QAction ( tr ( "&Save Config" ), this );
   saveConfig->setShortcut ( QKeySequence::Save );
   saveConfig->setStatusTip ( tr ( "Save default configuration" ));
- qDebug("userConfigFile =" + userConfigFile.toLatin1());
   connect ( saveConfig, SIGNAL( triggered()), this, SLOT(save()));
-  // FIX ME - set up slots
+  
+  saveConfigAs = new QAction ( tr ( "Save Config &As" ), this );
+  saveConfigAs->setShortcut ( QKeySequence::SaveAs );
+  saveConfigAs->setStatusTip ( tr ( "Save configuration in a new file" ));
+  connect ( saveConfigAs, SIGNAL( triggered()), this, SLOT(saveas()));
 
   exit = new QAction ( tr ( "&Quit" ), this );
   exit->setShortcut ( QKeySequence::Quit );
@@ -1351,6 +1370,7 @@ MainWindow::createMenus ( void )
   fileMenu = menuBar()->addMenu( tr ( "&File" ));
   fileMenu->addAction ( loadConfig );
   fileMenu->addAction ( saveConfig );
+  fileMenu->addAction ( saveConfigAs );
   fileMenu->addSeparator();
   fileMenu->addAction ( exit );
 
@@ -1963,8 +1983,37 @@ MainWindow::clearDroppedFrames ( void )
 void
 MainWindow::save ( void )
 {
- qDebug("userConfigFile =" + userConfigFile.toLatin1());
  writeConfig ( userConfigFile );
+}
+
+void
+MainWindow::saveas ( void )
+{
+ QString selectedConfigFile;
+ QFileDialog dialogSave;
+
+ selectedConfigFile = dialogSave.getSaveFileName ( this, tr ( "Save Config" ),
+      userConfigFile, tr ( "Config files (*.ini)" ));
+  if ( selectedConfigFile.isEmpty()) {
+    selectedConfigFile = userConfigFile;
+  }
+ userConfigFile = selectedConfigFile;
+ writeConfig ( userConfigFile );
+}
+
+void
+MainWindow::load ( void )
+{
+ QString selectedConfigFile;
+ QFileDialog dialogLoad;
+
+ selectedConfigFile = dialogLoad.getOpenFileName ( this, tr ( "Open Config" ),
+      userConfigFile, tr ( "Config files (*.ini)" ));
+  if ( selectedConfigFile.isEmpty()) {
+    selectedConfigFile = userConfigFile;
+  }
+ userConfigFile = selectedConfigFile;
+ readConfig ( userConfigFile );
 }
 
 void

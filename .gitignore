@@ -181,3 +181,15 @@ ui_*.h
 /liboacam/demo/updateMenuControl
 /liboacam/demo/setFrameFormat
 /liboacam/demo/setFrameSize
+
+# jcrosso
+core
+*.so
+*.bin
+*.json
+*.ini
+*.txt
+*.tmp
+*~
+*.err
+

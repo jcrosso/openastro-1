@@ -40,7 +40,8 @@ const char*	targetList[NUM_TARGETS] = {
   QT_TRANSLATE_NOOP( "QObject", "Neptune" ),
   QT_TRANSLATE_NOOP( "QObject", "Pluto" ),
   QT_TRANSLATE_NOOP( "QObject", "Moon" ),
-  QT_TRANSLATE_NOOP( "QObject", "Sun" )
+  QT_TRANSLATE_NOOP( "QObject", "Sun HA" ),
+  QT_TRANSLATE_NOOP( "QObject", "Sun V" )
 };
 
 

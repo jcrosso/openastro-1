@@ -37,7 +37,8 @@
 #define	TGT_NEPTUME	8
 #define TGT_PLUTO	9
 #define TGT_MOON	10
-#define TGT_SUN		11
-#define NUM_TARGETS	(TGT_SUN+1)
+#define TGT_SUN_HA	11
+#define TGT_SUN_V	12
+#define NUM_TARGETS	(TGT_SUN_V+1)
 
 extern const QString targetName ( unsigned int );
