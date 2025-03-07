@@ -140,6 +140,7 @@ if (configFile == "")
   commonState.captureIndex = 0;
   state.settingsWidget = nullptr;
   state.advancedSettings = nullptr;
+  state.previewScroller = nullptr;
   colourDialog = nullptr;
 
   // need to do this to prevent access attempts before creation
@@ -150,6 +151,8 @@ if (configFile == "")
 
   connect ( state.previewWidget, SIGNAL( updateFrameCount ( unsigned int )),
       this, SLOT ( setCapturedFrames ( unsigned int )));
+  connect ( state.previewWidget, SIGNAL( updateElapsedTime ( unsigned int )),
+      this, SLOT ( setElapsedTime ( unsigned int )));      
   connect ( state.previewWidget, SIGNAL( updateProgress ( unsigned int )),
       this, SLOT ( setProgress ( unsigned int )));
   connect ( state.previewWidget, SIGNAL( stopRecording ( void )),
@@ -450,8 +453,7 @@ MainWindow::readConfig ( QString configFile )
   } else {
 
     int version = settings->value ( "configVersion", CONFIG_VERSION ).toInt();
-
-    restoreGeometry ( settings->value ( "geometry").toByteArray());
+    setGeometry ( settings->value ( "geometry").toRect());
 
     // FIX ME -- how to handle this?
     // config.cameraDevice = settings->value ( "device/camera", -1 ).toInt();
@@ -580,6 +582,7 @@ MainWindow::readConfig ( QString configFile )
 				"histogram/rawRGB", 1 ).toInt();
     histogramConf.logHistogram = settings->value (
 				"histogram/log", 1 ).toInt();    
+    config.histogramGeometry = settings->value ( "histogram/geometry" ).toRect();
 
     demosaicConf.demosaicPreview = settings->value ( "demosaic/preview",
 				0 ).toInt();
@@ -756,6 +759,9 @@ MainWindow::readConfig ( QString configFile )
                 }
                 p.filterProfiles[ k ].intervalMenuOption = settings->value (
                     "intervalMenuOption", 1 ).toInt(); // default = msec
+                p.filterProfiles[ k ].exposureMenuOption = settings->value (
+                    "exposureMenuOption", 1 ).toInt();
+                    qWarning() << "exposureMenuOption" << p.filterProfiles[ k ].exposureMenuOption << "intervalMenuOption" << p.filterProfiles[ k ].intervalMenuOption; 
               }
             }
             settings->endArray();
@@ -825,6 +831,7 @@ MainWindow::readConfig ( QString configFile )
           FILTER_PROFILE fp;
           fp.filterName = filterConf.filters[k].filterName;
           fp.intervalMenuOption = 1; // msec
+          fp.exposureMenuOption = 1;
           p.filterProfiles.append ( fp );
         }
       }
@@ -1075,42 +1082,30 @@ MainWindow::writeConfig ( QString configFile )
   settings->setValue ( "image/zoomButton3Option", config.zoomButton3Option );
   settings->setValue ( "image/zoomValue", config.zoomValue );
 
-  settings->setValue ( "control/exposureMenuOption",
-      config.exposureMenuOption );
-  settings->setValue ( "control/frameRateNumerator",
-      commonConfig.frameRateNumerator );
-  settings->setValue ( "control/frameRateDenominator",
-      commonConfig.frameRateDenominator );
-  settings->setValue ( "control/selectableControl1",
-      config.selectableControl[0] );
-  settings->setValue ( "control/selectableControl2",
-      config.selectableControl[1] );
-  settings->setValue ( "control/intervalMenuOption",
-      config.intervalMenuOption );
+  settings->setValue ( "control/exposureMenuOption", config.exposureMenuOption );
+  settings->setValue ( "control/frameRateNumerator", commonConfig.frameRateNumerator );
+  settings->setValue ( "control/frameRateDenominator", commonConfig.frameRateDenominator );
+  settings->setValue ( "control/selectableControl1", config.selectableControl[0] );
+  settings->setValue ( "control/selectableControl2", config.selectableControl[1] );
+  settings->setValue ( "control/intervalMenuOption", config.intervalMenuOption );
 
   settings->setValue ( "control/profileOption", commonConfig.profileOption );
   settings->setValue ( "control/filterOption", commonConfig.filterOption );
   settings->setValue ( "control/fileTypeOption", commonConfig.fileTypeOption );
   settings->setValue ( "control/limitEnabled", commonConfig.limitEnabled );
-  settings->setValue ( "control/framesLimitValue",
-			commonConfig.framesLimitValue );
-  settings->setValue ( "control/secondsLimitValue",
-			commonConfig.secondsLimitValue );
+  settings->setValue ( "control/framesLimitValue", commonConfig.framesLimitValue );
+  settings->setValue ( "control/secondsLimitValue", commonConfig.secondsLimitValue );
   settings->setValue ( "control/limitType", commonConfig.limitType );
   settings->setValue ( "control/dirProfile", commonConfig.dirProfile );
   settings->setValue ( "control/dirDate", commonConfig.dirDate );
   
-  settings->setValue ( "control/fileNameTemplate",
-			commonConfig.fileNameTemplate );
-  settings->setValue ( "control/captureDirectory",
-			commonConfig.captureDirectory );
+  settings->setValue ( "control/fileNameTemplate", commonConfig.fileNameTemplate );
+  settings->setValue ( "control/captureDirectory", commonConfig.captureDirectory );
 
   settings->setValue ( "autorun/count", autorunConf.autorunCount );
   settings->setValue ( "autorun/delay", autorunConf.autorunDelay );
-  settings->setValue ( "autorun/filterPrompt",
-			filterConf.promptForFilterChange );
-  settings->setValue ( "autorun/interFilterDelay",
-      filterConf.interFilterDelay );
+  settings->setValue ( "autorun/filterPrompt", filterConf.promptForFilterChange );
+  settings->setValue ( "autorun/interFilterDelay", filterConf.interFilterDelay );
 
   settings->setValue ( "display/preview", config.preview );
   settings->setValue ( "display/nightMode", config.nightMode );
@@ -1120,13 +1115,14 @@ MainWindow::writeConfig ( QString configFile )
   settings->setValue ( "histogram/onTop", histogramConf.histogramOnTop );
   settings->setValue ( "histogram/rawRGB", histogramConf.rawRGBHistogram );
   settings->setValue ( "histogram/log", histogramConf.logHistogram );
-  
+  if ( state.histogramWidget ) {
+    settings->setValue ( "histogram/geometry", state.histogramWidget->geometry() );
+  }
 
   settings->setValue ( "demosaic/preview", demosaicConf.demosaicPreview );
   settings->setValue ( "demosaic/output", demosaicConf.demosaicOutput );
   settings->setValue ( "demosaic/method", demosaicConf.demosaicMethod );
-  settings->setValue ( "demosaic/monoIsRawColour",
-			demosaicConf.monoIsRawColour );
+  settings->setValue ( "demosaic/monoIsRawColour", demosaicConf.monoIsRawColour );
   settings->setValue ( "demosaic/cfaPattern", demosaicConf.cfaPattern );
 
   settings->setValue ( "reticle/style", generalConf.reticleStyle );
@@ -1163,6 +1159,8 @@ MainWindow::writeConfig ( QString configFile )
       settings->setValue ( "useROI", profileConf.profiles[i].useROI );
       settings->setValue ( "imageSizeX", profileConf.profiles[i].imageSizeX );
       settings->setValue ( "imageSizeY", profileConf.profiles[i].imageSizeY );
+      settings->setValue ( "selectableControl1", config.selectableControl[0] );
+      settings->setValue ( "selectableControl2", config.selectableControl[1] );
 
       if ( filterConf.numFilters &&
           !profileConf.profiles[ i ].filterProfiles.isEmpty()) {
@@ -1171,6 +1169,8 @@ MainWindow::writeConfig ( QString configFile )
           settings->setArrayIndex ( j );
           settings->setValue ( "intervalMenuOption",
               profileConf.profiles[i].filterProfiles[ j ].intervalMenuOption );
+          settings->setValue ( "exposureMenuOption",
+              profileConf.profiles[i].filterProfiles[ j ].exposureMenuOption );    
           settings->beginWriteArray ( "controls" );
           for ( int k = 1; k < OA_CAM_CTRL_LAST_P1; k++ ) {
             settings->setArrayIndex ( k - 1 );
@@ -1320,20 +1320,26 @@ MainWindow::createStatusBar ( void )
   statusLine = statusBar();
   setStatusBar ( statusLine );
 
+  elapsedLabel = new QLabel ( tr ( "Time" ));
+  elapsedLabel->setFixedWidth ( 45 );
   capturedLabel = new QLabel ( tr ( "Captured" ));
   capturedLabel->setFixedWidth ( 65 );
   droppedLabel = new QLabel ( tr ( "Dropped" ));
   droppedLabel->setFixedWidth ( 60 );
   progressBar = new QProgressBar;
-  progressBar->setFixedWidth ( 200 );
+  progressBar->setFixedWidth ( 140 );
   progressBar->setRange ( 0, 100 );
   progressBar->setTextVisible ( true );
 
+  elapsedValue = new QLabel ( "0s" );
+  elapsedValue->setFixedWidth ( 40 );
   capturedValue = new QLabel ( "0" );
   capturedValue->setFixedWidth ( 40 );
   droppedValue = new QLabel ( "0" );
   droppedValue->setFixedWidth ( 40 );
 
+  statusLine->addPermanentWidget ( elapsedLabel );
+  statusLine->addPermanentWidget ( elapsedValue );
   statusLine->addPermanentWidget ( capturedLabel );
   statusLine->addPermanentWidget ( capturedValue );
   statusLine->addPermanentWidget ( droppedLabel );
@@ -1663,6 +1669,9 @@ MainWindow::connectCamera ( int deviceIndex )
     config.intervalMenuOption = profileConf.profiles[
 				commonConfig.profileOption ].filterProfiles[
 				commonConfig.filterOption ].intervalMenuOption;
+    config.exposureMenuOption = profileConf.profiles[
+				commonConfig.profileOption ].filterProfiles[
+				commonConfig.filterOption ].exposureMenuOption;      
   }
   configure();
   statusLine->showMessage ( commonState.camera->name() +
@@ -1957,6 +1966,14 @@ MainWindow::setCapturedFrames ( unsigned int newVal )
   capturedValue->setText ( stringVal );
 }
 
+void
+MainWindow::setElapsedTime ( unsigned int newVal )
+{
+  QString stringVal;
+
+  stringVal.setNum ( newVal / 1000 );
+  elapsedValue->setText ( stringVal + "s" );
+}
 
 void
 MainWindow::setDroppedFrames()
@@ -2083,6 +2100,7 @@ MainWindow::enableHistogram ( void )
 			state.histogramSignalConnected = 1;
 		}
     state.histogramWidget->show();
+    state.histogramWidget->setGeometry ( config.histogramGeometry);
     state.histogramOn = 1;
     config.showHistogram = 1;
     oldHistogramState = -1;
@@ -2739,6 +2757,7 @@ MainWindow::createPreviewWindow()
   int minHeight = 600, minWidth = 800;
 
   previewScroller = new QScrollArea ( this );
+  state.previewScroller = previewScroller;
   focusOverlay = new FocusOverlay ( previewScroller );
   state.focusOverlay = focusOverlay;
   previewWidget = new PreviewWidget ( previewScroller );

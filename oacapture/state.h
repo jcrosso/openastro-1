@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <QtGui>
 #include "mainWindow.h"
 #include "controlWidget.h"
 #include "previewWidget.h"
@@ -56,6 +57,7 @@ typedef struct
   SettingsWidget*	settingsWidget;
   AdvancedSettings*	advancedSettings;
   FocusOverlay*		focusOverlay;
+  QScrollArea*		previewScroller;
 
   int			autorunEnabled;
   int			autorunRemaining;

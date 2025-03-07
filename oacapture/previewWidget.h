@@ -78,6 +78,7 @@ class PreviewWidget : public QFrame
 
   signals:
     void		updateFrameCount ( unsigned int );
+    void    updateElapsedTime ( unsigned int );
     void		updateActualFrameRate ( double );
     void		updateProgress ( unsigned int );
     void		updateHistogram ( void );

@@ -568,6 +568,7 @@ oacamSetResolution ( oaCamera* camera, int x, int y )
   command.commandType = OA_CMD_RESOLUTION_SET;
   s.x = x;
   s.y = y;
+  oaLogDebug ( OA_LOG_CAMERA, "%s: setting resolution to %dx%d", __func__, x, y );
   command.commandData = &s;
   cameraInfo = camera->_private;
   oaDLListAddToTail ( cameraInfo->commandQueue, &command );

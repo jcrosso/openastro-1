@@ -47,6 +47,8 @@ extern "C" {
 typedef struct {
 	int64_t				controlValues[OA_CAM_CTRL_MODIFIERS_LAST_P1][ OA_CAM_CTRL_LAST_P1 ];
 	int						forceInputFrameFormat;
+  int           intervalMenuOption;
+  int           exposureMenuOption;
 } cameraConfig;
 
 extern cameraConfig cameraConf;

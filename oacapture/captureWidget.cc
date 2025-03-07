@@ -252,8 +252,8 @@ CaptureWidget::CaptureWidget ( QWidget* parent ) : QGroupBox ( parent )
   connect ( countSecondsMenu, SIGNAL( currentIndexChanged ( int )),
       this, SLOT( changeSecondsLimitText()));
 
-  dirProfileCheckbox = new QCheckBox ( tr ( "DP" ), this );
-  dirProfileCheckbox->setToolTip ( tr ( "Add profile to capture path" ));
+  dirProfileCheckbox = new QCheckBox ( tr ( "PD" ), this );
+  dirProfileCheckbox->setToolTip ( tr ( "Add profile name to capture path" ));
   dirProfileCheckbox->setChecked ( commonConfig.dirProfile );
   connect ( dirProfileCheckbox, SIGNAL( stateChanged ( int )), this,
       SLOT( setDirProfile ( int )));
@@ -1430,8 +1430,11 @@ CaptureWidget::updateFilterSettingsFromProfile ( void )
         commonConfig.filterOption ].controls[j][i];
     }
   }
-
-  state.controlWidget->updateFromConfig();
+  cameraConf.intervalMenuOption = profileConf.profiles[ commonConfig.profileOption ].filterProfiles[
+        commonConfig.filterOption ].intervalMenuOption;
+  cameraConf.exposureMenuOption = profileConf.profiles[ commonConfig.profileOption ].filterProfiles[
+        commonConfig.filterOption ].exposureMenuOption;
+    state.controlWidget->updateFromConfig();
   updateFromConfig();
 }
 

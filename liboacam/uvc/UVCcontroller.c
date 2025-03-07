@@ -765,6 +765,8 @@ _doStart ( oaCamera* camera )
   frame = cameraInfo->currentUVCFormat->frame_descs;
   matched = 0;
   do {
+    oaLogDebug ( OA_LOG_CAMERA, "%s: xSize = %d, ySize = %d, wWidth = %d, wHeight = %d", __func__, cameraInfo->xSize, cameraInfo->ySize, frame->wWidth,
+        frame->wHeight ); 
     if ( frame->wWidth == cameraInfo->xSize && frame->wHeight ==
         cameraInfo->ySize ) {
       matched = 1;
@@ -784,8 +786,10 @@ _doStart ( oaCamera* camera )
 	} else {
 		camera->features.flags &= ~OA_CAM_FEATURE_FRAME_RATES;
 	}
+oaLogDebug ( OA_LOG_CAMERA, "%s: flags = %d, intervalType = %d", __func__, camera->features.flags, frame->bFrameIntervalType );
 //cameraInfo->frameInterval = frame->dwDefaultFrameInterval;
-
+oaLogDebug ( OA_LOG_CAMERA, "%s: frame rate %d/%d", __func__, cameraInfo->frameRateNumerator, cameraInfo->frameRateDenominator );
+oaLogDebug ( OA_LOG_CAMERA, "%s: uvcHandle = %d, UVCFormatID = %d", __func__, cameraInfo->uvcHandle, cameraInfo->currentUVCFormatId );
   multiplier = oaFrameFormats[ cameraInfo->currentFrameFormat ].bytesPerPixel;
   cameraInfo->currentFrameLength = cameraInfo->xSize * cameraInfo->ySize *
       multiplier;
@@ -795,6 +799,7 @@ _doStart ( oaCamera* camera )
       cameraInfo->frameRateDenominator / cameraInfo->frameRateNumerator );
   if ( UVC_ERROR_INVALID_MODE == res ) {
     // have another go with whatever frame rate we can find
+oaLogDebug ( OA_LOG_CAMERA, "%s: frame rate 0", __func__);    
     res = p_uvc_get_stream_ctrl_format_size ( cameraInfo->uvcHandle,
         &cameraInfo->streamControl, cameraInfo->currentUVCFormatId,
         cameraInfo->xSize, cameraInfo->ySize, 0 );

@@ -80,6 +80,7 @@ typedef struct
   // display config
   int			preview;
   int			nightMode;
+  QRect   histogramGeometry;
 
 } CONFIG;
 

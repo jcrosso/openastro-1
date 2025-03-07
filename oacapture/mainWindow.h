@@ -103,6 +103,7 @@ class MainWindow : public QMainWindow
     QAction*		resetTimerDevice;
     QAction*		timerMenuSeparator;
     QProgressBar*	progressBar;
+    QLabel*		elapsedValue;
     QLabel*		capturedValue;
     QLabel*		droppedValue;
     QStatusBar*		statusLine;
@@ -138,6 +139,7 @@ class MainWindow : public QMainWindow
     QString		timerMenuEntry[ OA_MAX_DEVICES ];
     oaTimerDevice**	timerDevs;
 
+    QLabel*		elapsedLabel;
     QLabel*		capturedLabel;
     QLabel*		droppedLabel;
 
@@ -265,6 +267,7 @@ class MainWindow : public QMainWindow
     void		advancedClosed ( void );
     void		doColouriseSettings ( void );
     void		setCapturedFrames ( unsigned int );
+    void    setElapsedTime ( unsigned int );
     void		setDroppedFrames ( void );
     void		setProgress ( unsigned int );
     void		reveal ( void );

@@ -70,7 +70,8 @@ PreviewWidget::PreviewWidget ( QWidget* parent ) : QFrame ( parent )
   lastDisplayUpdateTime = 0;
   frameDisplayInterval = 1000/15; // display frames per second
   previewEnabled = 1;
-  videoFramePixelFormat = OA_PIX_FMT_RGB24;
+  videoFramePixelFormat = config.inputFrameFormat;
+//  videoFramePixelFormat = OA_PIX_FMT_RGB24;
   framesInFpsCalcPeriod = fpsCalcPeriodStartTime = 0;
   flipX = flipY = 0;
   movingReticle = rotatingReticle = rotationAngle = 0;
@@ -165,6 +166,8 @@ PreviewWidget::recalculateDimensions ( int zoomFactor )
     reticleCentreY = currentZoomY / 2;
   }
   setGeometry ( 0, 0, currentZoomX, currentZoomY );
+  state.previewScroller->verticalScrollBar()->setValue( (state.previewScroller->verticalScrollBar()->maximum() - state.previewScroller->verticalScrollBar()->minimum()) / 2 );
+  state.previewScroller->horizontalScrollBar()->setValue( (state.previewScroller->horizontalScrollBar()->maximum() - state.previewScroller->horizontalScrollBar()->minimum()) / 2 );
   savedXSize = currentZoomX;
   savedYSize = currentZoomY;
   if ( 0 == rotationAngle ) {
@@ -432,8 +435,7 @@ PreviewWidget::setMonoPalette ( QColor colour )
 #define NEXT_FREE_BUFFER(x) ( -1 == x ) ? 0 : !x
 
 void*
-PreviewWidget::updatePreview ( void* args, void* imageData, int length,
-		void* metadata )
+PreviewWidget::updatePreview ( void* args, void* imageData, int length, void* metadata )
 {
   COMMON_STATE*		commonState = static_cast<COMMON_STATE*>( args );
   STATE*					state = static_cast<STATE*>( commonState->localState );
@@ -802,6 +804,7 @@ PreviewWidget::updatePreview ( void* args, void* imageData, int length,
         if (( self->lastCapturedFramesUpdateTime +
             self->capturedFramesDisplayInterval ) < now ) {
           emit self->updateFrameCount ( output->getFrameCount());
+          emit self->updateElapsedTime ( now - state->firstFrameTime );
           self->lastCapturedFramesUpdateTime = now;
         }
       }
@@ -874,6 +877,7 @@ PreviewWidget::updatePreview ( void* args, void* imageData, int length,
         // these two are really just tidying up the display
         emit self->updateProgress ( 100 );
         emit self->updateFrameCount ( frames );
+        emit self->updateElapsedTime ( now - state->firstFrameTime );
         if ( state->autorunEnabled ) {
           // returns non-zero if more runs are left
           // This call is thread-safe because the called function is aware

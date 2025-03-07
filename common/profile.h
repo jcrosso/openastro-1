@@ -42,6 +42,7 @@ typedef struct {
   QString	filterName;
   int		controls[OA_CAM_CTRL_MODIFIERS_LAST_P1][ OA_CAM_CTRL_LAST_P1 ];
   int		intervalMenuOption;
+  int		exposureMenuOption;
 } FILTER_PROFILE;
 
 typedef struct {

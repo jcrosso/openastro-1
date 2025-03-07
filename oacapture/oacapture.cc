@@ -204,7 +204,7 @@ main ( int argc, char* argv[] )
 		}
 		exit ( 1 );
 	}
-
+oaLogDebug (OA_LOG_CAMERA, "Hola" );
   MainWindow mainWindow ( configFile );
   mainWindow.show();
 

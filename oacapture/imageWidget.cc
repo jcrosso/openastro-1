@@ -298,6 +298,8 @@ ImageWidget::cameraROIChanged ( int index )
   commonConfig.imageSizeY = YResolutions[ index ];
   // xSize->setText ( QString::number ( commonConfig.imageSizeX ));
   // ySize->setText ( QString::number ( commonConfig.imageSizeY ));
+  qWarning() << "cameraROIChanged: " << "x =" << commonConfig.imageSizeX << "y =" <<
+      commonConfig.imageSizeY;
   doResolutionChange ( 0 );
 }
 
